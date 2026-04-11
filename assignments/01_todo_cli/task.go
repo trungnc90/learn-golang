@@ -87,7 +87,7 @@ func addTask(title, description, priority string) {
 func listTasks(filter string) {
 	tasks, err := loadTasks()
 	if err != nil {
-		fmt.Println("Error loading tasks:", err)
+		fmt.Println("listTasks(): Error loading tasks:", err)
 		return
 	}
 

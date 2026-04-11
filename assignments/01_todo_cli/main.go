@@ -1,9 +1,11 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func getFlag(args []string, flag string) string {
@@ -15,85 +17,128 @@ func getFlag(args []string, flag string) string {
 	return ""
 }
 
-func main() {
-	if len(os.Args) < 2 {
-		printUsage()
-		return
+// parseArgs splits an input line into tokens, keeping quoted strings together.
+func parseArgs(line string) []string {
+	var args []string
+	var current strings.Builder
+	inQuote := false
+
+	for _, r := range line {
+		switch {
+		case r == '"':
+			inQuote = !inQuote
+		case r == ' ' && !inQuote:
+			if current.Len() > 0 {
+				args = append(args, current.String())
+				current.Reset()
+			}
+		default:
+			current.WriteRune(r)
+		}
 	}
+	if current.Len() > 0 {
+		args = append(args, current.String())
+	}
+	return args
+}
 
-	switch os.Args[1] {
+func main() {
 
-	case "add":
-		if len(os.Args) < 3 {
-			fmt.Println("Command: todo add <title> [--desc <description>] [--priority <low|medium|high>]")
+	scanner := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("Todo CLI>")
+		if !scanner.Scan() {
+			continue
+		}
+
+		args := parseArgs(scanner.Text())
+		if len(args) == 0 {
+			continue
+		}
+
+		command := args[0]
+		if command == "exit" || command == "quit" {
+			fmt.Print("Bye\n")
 			return
 		}
 
-		title := os.Args[2]
-		description := getFlag(os.Args, "--desc")
-		priority := getFlag(os.Args, "--priority")
-		addTask(title, description, priority)
-	case "list":
-		filter := ""
-		if len(os.Args) >= 3 {
-			filter = os.Args[2]
-		}
-		listTasks(filter)
+		switch command {
+		case "add":
+			if len(args) < 2 {
+				fmt.Println("Command: todo add <title> [--desc <description>] [--priority <low|medium|high>]")
+				continue
+			}
 
-	case "delete":
-		if len(os.Args) < 3 {
-			fmt.Println("Command: todo delete <Id>")
-			return
-		}
-		id, err := strconv.Atoi(os.Args[2])
-		if err != nil {
-			fmt.Println("Invalid task id")
-			return
-		}
+			title := args[1]
+			description := getFlag(args, "--desc")
+			priority := getFlag(args, "--priority")
+			addTask(title, description, priority)
+		case "list":
+			filter := ""
+			if len(args) >= 2 {
+				filter = args[1]
+			}
+			listTasks(filter)
 
-		deleteTask(id)
-	case "update":
-		if len(os.Args) < 3 {
-			fmt.Println("Command: todo update <id> [--title <title>] [--desc <description>] [--priority <low|medium|high>]")
-			return
-		}
+		case "delete":
+			if len(args) < 2 {
+				fmt.Println("Command: todo delete <Id>")
+				continue
+			}
+			id, err := strconv.Atoi(args[1])
+			if err != nil {
+				fmt.Println("Invalid task id")
+				continue
+			}
 
-		id, err := strconv.Atoi(os.Args[2])
-		if err != nil {
-			fmt.Println("Invalid task id")
-			return
-		}
+			deleteTask(id)
+		case "update":
+			if len(args) < 2 {
+				fmt.Println("Command: todo update <id> [--title <title>] [--desc <description>] [--priority <low|medium|high>]")
+				continue
+			}
 
-		title := getFlag(os.Args, "--title")
-		description := getFlag(os.Args, "--desc")
-		priority := getFlag(os.Args, "--priority")
-		updateTasks(id, title, description, priority)
+			id, err := strconv.Atoi(args[1])
+			if err != nil {
+				fmt.Println("Invalid task id")
+				continue
+			}
 
-	case "done":
-		if len(os.Args) < 3 {
-			fmt.Println("Command: todo done <id>")
-			return
-		}
-		id, err := strconv.Atoi(os.Args[2])
-		if err != nil {
-			fmt.Println("Invalid task Id")
-			return
-		}
-		toggleDone(id)
+			title := getFlag(args, "--title")
+			description := getFlag(args, "--desc")
+			priority := getFlag(args, "--priority")
+			updateTasks(id, title, description, priority)
 
-	default:
-		fmt.Printf("Unknown command: %s\n", os.Args[1])
-		printUsage()
+		case "done":
+			if len(args) < 2 {
+				fmt.Println("Command: todo done <id>")
+				continue
+			}
+			id, err := strconv.Atoi(args[1])
+			if err != nil {
+				fmt.Println("Invalid task Id")
+				continue
+			}
+			toggleDone(id)
+
+		case "help":
+			printUsage()
+		default:
+			fmt.Printf("Unknown command: %s\n", command)
+			printUsage()
+		}
 	}
 }
 
 func printUsage() {
 	fmt.Println(`Todo CLI - Task Manager
 
-Usage:
-  todo add <title> [--desc <description>] [--priority <low|medium|high>]
-  todo list [done|pending]
-  todo done <id>
-  todo delete <id>
-  todo update <id> [--title <title>] [--desc <description>] [--priority <low|medium|high>]`)
+Commands:
+  add <title> [--desc <description>] [--priority <low|medium|high>]
+  list [done|pending]
+  done <id>
+  delete <id>
+  update <id> [--title <title>] [--desc <description>] [--priority <low|medium|high>]
+  help
+  exit`)
 }
