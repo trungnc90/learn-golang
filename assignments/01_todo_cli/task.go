@@ -17,7 +17,7 @@ func nextId(tasks []Task) int {
 	return maxID + 1
 }
 
-func AddTask(store Store, cmd *AddCmd) {
+func AddTask(store Storer, cmd *AddCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("Error loading current tasks:", err)
@@ -47,7 +47,7 @@ func AddTask(store Store, cmd *AddCmd) {
 	fmt.Printf("Added task %d: %s\n", task.Id, task.Title)
 }
 
-func ListTasks(store Store, cmd *ListCmd) {
+func ListTasks(store Storer, cmd *ListCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("listTasks(): Error loading tasks:", err)
@@ -81,7 +81,7 @@ func ListTasks(store Store, cmd *ListCmd) {
 	w.Flush()
 }
 
-func UpdateTasks(store Store, cmd *UpdateCmd) {
+func UpdateTasks(store Storer, cmd *UpdateCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("updateTasks(): Error loading tasks:", err)
@@ -112,7 +112,7 @@ func UpdateTasks(store Store, cmd *UpdateCmd) {
 	fmt.Printf("Task #%d not found\n", cmd.Id)
 }
 
-func DeleteTask(store Store, cmd *DeleteCmd) {
+func DeleteTask(store Storer, cmd *DeleteCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("deleteTask(): Error loading tasks:", err)
@@ -133,7 +133,7 @@ func DeleteTask(store Store, cmd *DeleteCmd) {
 	fmt.Printf("Task #%d not found\n", cmd.Id)
 }
 
-func ToggleDone(store Store, cmd *DoneCmd) {
+func ToggleDone(store Storer, cmd *DoneCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("toggleDone(): Error loading tasks", err)

@@ -12,7 +12,7 @@ import (
 
 // --- Shared test logic for any Store implementation ---
 
-func testStore_SaveAndLoad(t *testing.T, store Store) {
+func testStore_SaveAndLoad(t *testing.T, store Storer) {
 	t.Helper()
 
 	tasks := []Task{
@@ -36,7 +36,7 @@ func testStore_SaveAndLoad(t *testing.T, store Store) {
 	}
 }
 
-func testStore_LoadEmpty(t *testing.T, store Store) {
+func testStore_LoadEmpty(t *testing.T, store Storer) {
 	t.Helper()
 
 	tasks, err := store.Load()
@@ -48,7 +48,7 @@ func testStore_LoadEmpty(t *testing.T, store Store) {
 	}
 }
 
-func testStore_Overwrite(t *testing.T, store Store) {
+func testStore_Overwrite(t *testing.T, store Storer) {
 	t.Helper()
 
 	store.Save([]Task{{Id: 1, Title: "Old"}})
@@ -63,7 +63,7 @@ func testStore_Overwrite(t *testing.T, store Store) {
 	}
 }
 
-func testStore_SaveEmpty(t *testing.T, store Store) {
+func testStore_SaveEmpty(t *testing.T, store Storer) {
 	t.Helper()
 
 	store.Save([]Task{{Id: 1, Title: "Task"}})
@@ -75,7 +75,7 @@ func testStore_SaveEmpty(t *testing.T, store Store) {
 	}
 }
 
-func testStore_LoadReturnsCopy(t *testing.T, store Store) {
+func testStore_LoadReturnsCopy(t *testing.T, store Storer) {
 	t.Helper()
 
 	store.Save([]Task{{Id: 1, Title: "Original"}})
