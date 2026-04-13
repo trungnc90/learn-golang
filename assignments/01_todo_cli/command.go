@@ -1,4 +1,4 @@
-package main
+package todo
 
 import (
 	"fmt"
@@ -41,8 +41,8 @@ type Command struct {
 	Exit   bool
 }
 
-// tokenize splits an input line into tokens, keeping quoted strings together.
-func tokenize(line string) []string {
+// Tokenize splits an input line into tokens, keeping quoted strings together.
+func Tokenize(line string) []string {
 	var tokens []string
 	var current strings.Builder
 	inQuote := false
@@ -66,7 +66,7 @@ func tokenize(line string) []string {
 	return tokens
 }
 
-func getFlag(tokens []string, flag string) string {
+func GetFlag(tokens []string, flag string) string {
 	for i, t := range tokens {
 		if t == flag && i+1 < len(tokens) {
 			return tokens[i+1]
@@ -75,10 +75,10 @@ func getFlag(tokens []string, flag string) string {
 	return ""
 }
 
-// parseCommand parses a raw input line into a structured Command.
+// ParseCommand parses a raw input line into a structured Command.
 // Returns an error if the input is invalid.
-func parseCommand(line string) (Command, error) {
-	tokens := tokenize(line)
+func ParseCommand(line string) (Command, error) {
+	tokens := Tokenize(line)
 	if len(tokens) == 0 {
 		return Command{}, fmt.Errorf("empty input")
 	}
@@ -90,8 +90,8 @@ func parseCommand(line string) (Command, error) {
 		}
 		return Command{Add: &AddCmd{
 			Title:       tokens[1],
-			Description: getFlag(tokens, "--desc"),
-			Priority:    getFlag(tokens, "--priority"),
+			Description: GetFlag(tokens, "--desc"),
+			Priority:    GetFlag(tokens, "--priority"),
 		}}, nil
 
 	case "list":
@@ -121,9 +121,9 @@ func parseCommand(line string) (Command, error) {
 		}
 		return Command{Update: &UpdateCmd{
 			Id:          id,
-			Title:       getFlag(tokens, "--title"),
-			Description: getFlag(tokens, "--desc"),
-			Priority:    getFlag(tokens, "--priority"),
+			Title:       GetFlag(tokens, "--title"),
+			Description: GetFlag(tokens, "--desc"),
+			Priority:    GetFlag(tokens, "--priority"),
 		}}, nil
 
 	case "done":

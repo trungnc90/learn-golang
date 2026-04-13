@@ -4,10 +4,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
 )
 
 func main() {
-	store := NewFileStore("tasks.json")
+	store := todo.NewFileStore("tasks.json")
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -16,7 +18,7 @@ func main() {
 			continue
 		}
 
-		cmd, err := parseCommand(scanner.Text())
+		cmd, err := todo.ParseCommand(scanner.Text())
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -29,15 +31,15 @@ func main() {
 		case cmd.Help:
 			printUsage()
 		case cmd.Add != nil:
-			addTask(store, cmd.Add)
+			todo.AddTask(store, cmd.Add)
 		case cmd.List != nil:
-			listTasks(store, cmd.List)
+			todo.ListTasks(store, cmd.List)
 		case cmd.Delete != nil:
-			deleteTask(store, cmd.Delete)
+			todo.DeleteTask(store, cmd.Delete)
 		case cmd.Update != nil:
-			updateTasks(store, cmd.Update)
+			todo.UpdateTasks(store, cmd.Update)
 		case cmd.Done != nil:
-			toggleDone(store, cmd.Done)
+			todo.ToggleDone(store, cmd.Done)
 		}
 	}
 }
