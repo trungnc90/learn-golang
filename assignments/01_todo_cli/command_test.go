@@ -1,37 +1,37 @@
 // How to run tests:
 //   go test -v ./...                    Run all tests
-//   go test -run TestTokenize           Run tokenize tests only
-//   go test -run TestParseCommand       Run parseCommand tests only
+//   go test -run TestTokenize           Run Tokenize tests only
+//   go test -run TestParseCommand       Run ParseCommand tests only
 
-package main
+package todo
 
 import (
 	"testing"
 )
 
-// --- tokenize ---
+// --- Tokenize ---
 
 func TestTokenize_Simple(t *testing.T) {
-	tokens := tokenize("add task1 --priority high")
+	tokens := Tokenize("add task1 --priority high")
 	expected := []string{"add", "task1", "--priority", "high"}
 	assertTokens(t, tokens, expected)
 }
 
 func TestTokenize_QuotedStrings(t *testing.T) {
-	tokens := tokenize(`add "Buy groceries" --desc "Milk and eggs"`)
+	tokens := Tokenize(`add "Buy groceries" --desc "Milk and eggs"`)
 	expected := []string{"add", "Buy groceries", "--desc", "Milk and eggs"}
 	assertTokens(t, tokens, expected)
 }
 
 func TestTokenize_Empty(t *testing.T) {
-	tokens := tokenize("")
+	tokens := Tokenize("")
 	if len(tokens) != 0 {
 		t.Fatalf("expected 0 tokens, got %d", len(tokens))
 	}
 }
 
 func TestTokenize_ExtraSpaces(t *testing.T) {
-	tokens := tokenize("  add   task1  ")
+	tokens := Tokenize("  add   task1  ")
 	expected := []string{"add", "task1"}
 	assertTokens(t, tokens, expected)
 }
@@ -48,10 +48,10 @@ func assertTokens(t *testing.T, got, expected []string) {
 	}
 }
 
-// --- parseCommand: add ---
+// --- ParseCommand: add ---
 
 func TestParseCommand_Add(t *testing.T) {
-	cmd, err := parseCommand(`add "Buy groceries" --desc "Milk, eggs" --priority high`)
+	cmd, err := ParseCommand(`add "Buy groceries" --desc "Milk, eggs" --priority high`)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -70,14 +70,14 @@ func TestParseCommand_Add(t *testing.T) {
 }
 
 func TestParseCommand_Add_MissingTitle(t *testing.T) {
-	_, err := parseCommand("add")
+	_, err := ParseCommand("add")
 	if err == nil {
 		t.Fatal("expected error for missing title")
 	}
 }
 
 func TestParseCommand_Add_DefaultFlags(t *testing.T) {
-	cmd, err := parseCommand("add task1")
+	cmd, err := ParseCommand("add task1")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -89,10 +89,10 @@ func TestParseCommand_Add_DefaultFlags(t *testing.T) {
 	}
 }
 
-// --- parseCommand: list ---
+// --- ParseCommand: list ---
 
 func TestParseCommand_List_NoFilter(t *testing.T) {
-	cmd, err := parseCommand("list")
+	cmd, err := ParseCommand("list")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -105,7 +105,7 @@ func TestParseCommand_List_NoFilter(t *testing.T) {
 }
 
 func TestParseCommand_List_WithFilter(t *testing.T) {
-	cmd, err := parseCommand("list done")
+	cmd, err := ParseCommand("list done")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -114,10 +114,10 @@ func TestParseCommand_List_WithFilter(t *testing.T) {
 	}
 }
 
-// --- parseCommand: delete ---
+// --- ParseCommand: delete ---
 
 func TestParseCommand_Delete(t *testing.T) {
-	cmd, err := parseCommand("delete 3")
+	cmd, err := ParseCommand("delete 3")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -130,23 +130,23 @@ func TestParseCommand_Delete(t *testing.T) {
 }
 
 func TestParseCommand_Delete_InvalidId(t *testing.T) {
-	_, err := parseCommand("delete abc")
+	_, err := ParseCommand("delete abc")
 	if err == nil {
 		t.Fatal("expected error for invalid id")
 	}
 }
 
 func TestParseCommand_Delete_MissingId(t *testing.T) {
-	_, err := parseCommand("delete")
+	_, err := ParseCommand("delete")
 	if err == nil {
 		t.Fatal("expected error for missing id")
 	}
 }
 
-// --- parseCommand: update ---
+// --- ParseCommand: update ---
 
 func TestParseCommand_Update(t *testing.T) {
-	cmd, err := parseCommand(`update 1 --title "New title" --desc "New desc" --priority low`)
+	cmd, err := ParseCommand(`update 1 --title "New title" --desc "New desc" --priority low`)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -168,7 +168,7 @@ func TestParseCommand_Update(t *testing.T) {
 }
 
 func TestParseCommand_Update_PartialFlags(t *testing.T) {
-	cmd, err := parseCommand("update 2 --title Updated")
+	cmd, err := ParseCommand("update 2 --title Updated")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -180,10 +180,10 @@ func TestParseCommand_Update_PartialFlags(t *testing.T) {
 	}
 }
 
-// --- parseCommand: done ---
+// --- ParseCommand: done ---
 
 func TestParseCommand_Done(t *testing.T) {
-	cmd, err := parseCommand("done 5")
+	cmd, err := ParseCommand("done 5")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -196,16 +196,16 @@ func TestParseCommand_Done(t *testing.T) {
 }
 
 func TestParseCommand_Done_InvalidId(t *testing.T) {
-	_, err := parseCommand("done xyz")
+	_, err := ParseCommand("done xyz")
 	if err == nil {
 		t.Fatal("expected error for invalid id")
 	}
 }
 
-// --- parseCommand: help, exit, unknown ---
+// --- ParseCommand: help, exit, unknown ---
 
 func TestParseCommand_Help(t *testing.T) {
-	cmd, err := parseCommand("help")
+	cmd, err := ParseCommand("help")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -215,7 +215,7 @@ func TestParseCommand_Help(t *testing.T) {
 }
 
 func TestParseCommand_Exit(t *testing.T) {
-	cmd, err := parseCommand("exit")
+	cmd, err := ParseCommand("exit")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -225,7 +225,7 @@ func TestParseCommand_Exit(t *testing.T) {
 }
 
 func TestParseCommand_Quit(t *testing.T) {
-	cmd, err := parseCommand("quit")
+	cmd, err := ParseCommand("quit")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -235,14 +235,14 @@ func TestParseCommand_Quit(t *testing.T) {
 }
 
 func TestParseCommand_Unknown(t *testing.T) {
-	_, err := parseCommand("foobar")
+	_, err := ParseCommand("foobar")
 	if err == nil {
 		t.Fatal("expected error for unknown command")
 	}
 }
 
 func TestParseCommand_Empty(t *testing.T) {
-	_, err := parseCommand("")
+	_, err := ParseCommand("")
 	if err == nil {
 		t.Fatal("expected error for empty input")
 	}

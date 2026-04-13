@@ -3,7 +3,7 @@
 //   go test -v -run TestMemoryStore ./...  Run MemoryStore tests only
 //   go test -v -run TestStore ./...        Run all store tests
 
-package main
+package todo
 
 import (
 	"os"

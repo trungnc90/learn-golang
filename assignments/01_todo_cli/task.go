@@ -1,4 +1,4 @@
-package main
+package todo
 
 import (
 	"fmt"
@@ -6,15 +6,6 @@ import (
 	"text/tabwriter"
 	"time"
 )
-
-type Task struct {
-	Id          int       `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Priority    string    `json:"priority"`
-	Done        bool      `json:"done"`
-	CreatedAt   time.Time `json:"created_at"`
-}
 
 func nextId(tasks []Task) int {
 	maxID := 0
@@ -26,7 +17,7 @@ func nextId(tasks []Task) int {
 	return maxID + 1
 }
 
-func addTask(store Store, cmd *AddCmd) {
+func AddTask(store Store, cmd *AddCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("Error loading current tasks:", err)
@@ -56,7 +47,7 @@ func addTask(store Store, cmd *AddCmd) {
 	fmt.Printf("Added task %d: %s\n", task.Id, task.Title)
 }
 
-func listTasks(store Store, cmd *ListCmd) {
+func ListTasks(store Store, cmd *ListCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("listTasks(): Error loading tasks:", err)
@@ -90,7 +81,7 @@ func listTasks(store Store, cmd *ListCmd) {
 	w.Flush()
 }
 
-func updateTasks(store Store, cmd *UpdateCmd) {
+func UpdateTasks(store Store, cmd *UpdateCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("updateTasks(): Error loading tasks:", err)
@@ -121,7 +112,7 @@ func updateTasks(store Store, cmd *UpdateCmd) {
 	fmt.Printf("Task #%d not found\n", cmd.Id)
 }
 
-func deleteTask(store Store, cmd *DeleteCmd) {
+func DeleteTask(store Store, cmd *DeleteCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("deleteTask(): Error loading tasks:", err)
@@ -142,7 +133,7 @@ func deleteTask(store Store, cmd *DeleteCmd) {
 	fmt.Printf("Task #%d not found\n", cmd.Id)
 }
 
-func toggleDone(store Store, cmd *DoneCmd) {
+func ToggleDone(store Store, cmd *DoneCmd) {
 	tasks, err := store.Load()
 	if err != nil {
 		fmt.Println("toggleDone(): Error loading tasks", err)

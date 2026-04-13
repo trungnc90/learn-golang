@@ -1,4 +1,4 @@
-package main
+package todo
 
 // MemoryStore implements Store using an in-memory slice.
 // Used for testing — no file I/O, no cleanup needed.
