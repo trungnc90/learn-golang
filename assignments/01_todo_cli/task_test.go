@@ -6,6 +6,7 @@
 package todo
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -28,140 +29,203 @@ func TestNextId(t *testing.T) {
 	})
 }
 
+// --- AddTask ---
+
 func TestAddTask(t *testing.T) {
-	t.Run("basic add with all fields", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "Buy groceries", Description: "Milk and eggs", Priority: "high"})
-		tasks, _ := store.Load()
-		if len(tasks) != 1 {
-			t.Fatalf("expected 1 task, got %d", len(tasks))
-		}
-		if tasks[0].Title != "Buy groceries" {
-			t.Fatalf("got '%s'", tasks[0].Title)
-		}
-		if tasks[0].Description != "Milk and eggs" {
-			t.Fatalf("got '%s'", tasks[0].Description)
-		}
-		if tasks[0].Priority != "high" {
-			t.Fatalf("got '%s'", tasks[0].Priority)
-		}
-		if tasks[0].Done != false {
-			t.Fatal("expected not done")
-		}
+	t.Run("calls Load then Save with new task", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return([]Task{}, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return len(tasks) == 1 &&
+				tasks[0].Title == "Buy groceries" &&
+				tasks[0].Description == "Milk and eggs" &&
+				tasks[0].Priority == "high" &&
+				tasks[0].Id == 1 &&
+				!tasks[0].Done
+		}).Return(nil)
+
+		AddTask(mock, &AddCmd{Title: "Buy groceries", Description: "Milk and eggs", Priority: "high"})
 	})
+
 	t.Run("default priority is low", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "No priority task"})
-		tasks, _ := store.Load()
-		if tasks[0].Priority != "low" {
-			t.Fatalf("got '%s'", tasks[0].Priority)
-		}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return([]Task{}, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return tasks[0].Priority == "low"
+		}).Return(nil)
+
+		AddTask(mock, &AddCmd{Title: "Task"})
 	})
-	t.Run("multiple tasks get sequential IDs", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "Task 1", Priority: "high"})
-		AddTask(store, &AddCmd{Title: "Task 2", Priority: "medium"})
-		AddTask(store, &AddCmd{Title: "Task 3", Priority: "low"})
-		tasks, _ := store.Load()
-		if len(tasks) != 3 {
-			t.Fatalf("expected 3, got %d", len(tasks))
-		}
-		if tasks[0].Id != 1 || tasks[1].Id != 2 || tasks[2].Id != 3 {
-			t.Fatal("IDs not sequential")
-		}
+
+	t.Run("appends to existing tasks", func(t *testing.T) {
+		existing := []Task{{Id: 3, Title: "Existing"}}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(existing, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return len(tasks) == 2 && tasks[1].Id == 4
+		}).Return(nil)
+
+		AddTask(mock, &AddCmd{Title: "New", Priority: "high"})
+	})
+
+	t.Run("does not save on load error", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("disk error"))
+		// No Save EXPECT — if AddTask calls Save, it panics
+
+		AddTask(mock, &AddCmd{Title: "Test"})
+	})
+
+	t.Run("handles save error", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return([]Task{}, nil)
+		mock.EXPECT().Save(t).Return(fmt.Errorf("write failed"))
+
+		AddTask(mock, &AddCmd{Title: "Test"})
 	})
 }
+
+// --- ToggleDone ---
 
 func TestToggleDone(t *testing.T) {
-	t.Run("toggle on and off", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "Toggle me", Priority: "low"})
-		ToggleDone(store, &DoneCmd{Id: 1})
-		tasks, _ := store.Load()
-		if !tasks[0].Done {
-			t.Fatal("expected done")
-		}
-		ToggleDone(store, &DoneCmd{Id: 1})
-		tasks, _ = store.Load()
-		if tasks[0].Done {
-			t.Fatal("expected pending")
-		}
+	t.Run("marks task as done", func(t *testing.T) {
+		tasks := []Task{{Id: 1, Title: "Task", Done: false}}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(tasks, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return tasks[0].Done == true
+		}).Return(nil)
+
+		ToggleDone(mock, &DoneCmd{Id: 1})
 	})
-	t.Run("not found", func(t *testing.T) {
-		store := NewMemoryStore()
-		ToggleDone(store, &DoneCmd{Id: 999})
+
+	t.Run("marks task as pending", func(t *testing.T) {
+		tasks := []Task{{Id: 1, Title: "Task", Done: true}}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(tasks, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return tasks[0].Done == false
+		}).Return(nil)
+
+		ToggleDone(mock, &DoneCmd{Id: 1})
+	})
+
+	t.Run("not found does not save", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return([]Task{}, nil)
+
+		ToggleDone(mock, &DoneCmd{Id: 999})
+	})
+
+	t.Run("does not save on load error", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
+
+		ToggleDone(mock, &DoneCmd{Id: 1})
 	})
 }
+
+// --- DeleteTask ---
 
 func TestDeleteTask(t *testing.T) {
-	t.Run("delete by id", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "Task 1", Priority: "high"})
-		AddTask(store, &AddCmd{Title: "Task 2", Priority: "low"})
-		DeleteTask(store, &DeleteCmd{Id: 1})
-		tasks, _ := store.Load()
-		if len(tasks) != 1 {
-			t.Fatalf("expected 1, got %d", len(tasks))
+	t.Run("removes task by id", func(t *testing.T) {
+		tasks := []Task{
+			{Id: 1, Title: "Task 1"},
+			{Id: 2, Title: "Task 2"},
 		}
-		if tasks[0].Title != "Task 2" {
-			t.Fatalf("got '%s'", tasks[0].Title)
-		}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(tasks, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return len(tasks) == 1 && tasks[0].Id == 2
+		}).Return(nil)
+
+		DeleteTask(mock, &DeleteCmd{Id: 1})
 	})
-	t.Run("not found", func(t *testing.T) {
-		store := NewMemoryStore()
-		DeleteTask(store, &DeleteCmd{Id: 999})
+
+	t.Run("not found does not save", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return([]Task{}, nil)
+
+		DeleteTask(mock, &DeleteCmd{Id: 999})
+	})
+
+	t.Run("does not save on load error", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
+
+		DeleteTask(mock, &DeleteCmd{Id: 1})
 	})
 }
 
+// --- UpdateTasks ---
+
 func TestUpdateTasks(t *testing.T) {
-	t.Run("update title only", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "Original", Description: "desc", Priority: "low"})
-		UpdateTasks(store, &UpdateCmd{Id: 1, Title: "Updated Title"})
-		tasks, _ := store.Load()
-		if tasks[0].Title != "Updated Title" {
-			t.Fatalf("got '%s'", tasks[0].Title)
-		}
-		if tasks[0].Description != "desc" {
-			t.Fatalf("got '%s'", tasks[0].Description)
-		}
-		if tasks[0].Priority != "low" {
-			t.Fatalf("got '%s'", tasks[0].Priority)
-		}
+	t.Run("updates title only", func(t *testing.T) {
+		tasks := []Task{{Id: 1, Title: "Old", Description: "desc", Priority: "low"}}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(tasks, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return tasks[0].Title == "New" &&
+				tasks[0].Description == "desc" &&
+				tasks[0].Priority == "low"
+		}).Return(nil)
+
+		UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "New"})
 	})
-	t.Run("update all fields", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "Original", Description: "old desc", Priority: "low"})
-		UpdateTasks(store, &UpdateCmd{Id: 1, Title: "New Title", Description: "new desc", Priority: "high"})
-		tasks, _ := store.Load()
-		if tasks[0].Title != "New Title" {
-			t.Fatalf("got '%s'", tasks[0].Title)
-		}
-		if tasks[0].Description != "new desc" {
-			t.Fatalf("got '%s'", tasks[0].Description)
-		}
-		if tasks[0].Priority != "high" {
-			t.Fatalf("got '%s'", tasks[0].Priority)
-		}
+
+	t.Run("updates all fields", func(t *testing.T) {
+		tasks := []Task{{Id: 1, Title: "Old", Description: "old", Priority: "low"}}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(tasks, nil)
+		mock.EXPECT().Save(t).MatchTasks(func(tasks []Task) bool {
+			return tasks[0].Title == "New" &&
+				tasks[0].Description == "new desc" &&
+				tasks[0].Priority == "high"
+		}).Return(nil)
+
+		UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "New", Description: "new desc", Priority: "high"})
 	})
-	t.Run("not found", func(t *testing.T) {
-		store := NewMemoryStore()
-		UpdateTasks(store, &UpdateCmd{Id: 999, Title: "title"})
+
+	t.Run("not found does not save", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return([]Task{}, nil)
+
+		UpdateTasks(mock, &UpdateCmd{Id: 999, Title: "title"})
+	})
+
+	t.Run("does not save on load error", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
+
+		UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "title"})
 	})
 }
+
+// --- ListTasks ---
 
 func TestListTasks(t *testing.T) {
 	t.Run("empty list", func(t *testing.T) {
-		store := NewMemoryStore()
-		ListTasks(store, &ListCmd{})
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return([]Task{}, nil)
+
+		ListTasks(mock, &ListCmd{})
 	})
-	t.Run("with filters", func(t *testing.T) {
-		store := NewMemoryStore()
-		AddTask(store, &AddCmd{Title: "Pending task", Priority: "low"})
-		AddTask(store, &AddCmd{Title: "Done task", Priority: "high"})
-		ToggleDone(store, &DoneCmd{Id: 2})
-		ListTasks(store, &ListCmd{})
-		ListTasks(store, &ListCmd{Filter: "done"})
-		ListTasks(store, &ListCmd{Filter: "pending"})
+
+	t.Run("loads tasks without error", func(t *testing.T) {
+		tasks := []Task{
+			{Id: 1, Title: "Task 1", Priority: "low"},
+			{Id: 2, Title: "Task 2", Priority: "high", Done: true},
+		}
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(tasks, nil)
+
+		ListTasks(mock, &ListCmd{})
+	})
+
+	t.Run("handles load error", func(t *testing.T) {
+		mock := testStorer()
+		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
+
+		ListTasks(mock, &ListCmd{})
 	})
 }

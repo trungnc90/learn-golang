@@ -14,6 +14,7 @@ type Task struct {
 
 // Storer defines the interface for task persistence.
 // Any storage backend (file, database, memory) can implement this.
+//go:generate go-mock-gen --interface=Storer
 type Storer interface {
 	Load() ([]Task, error)
 	Save(tasks []Task) error
