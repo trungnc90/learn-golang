@@ -31,23 +31,23 @@ func main() {
 		case cmd.Help:
 			printUsage()
 		case cmd.Add != nil:
-			if err := todo.AddTask(manager.Storer, cmd.Add); err != nil {
+			if err := manager.AddTask(cmd.Add); err != nil {
 				fmt.Println("Error:", err)
 			}
 		case cmd.List != nil:
-			if err := todo.ListTasks(manager.Storer, cmd.List); err != nil {
+			if err := manager.ListTasks(cmd.List); err != nil {
 				fmt.Println("Error:", err)
 			}
 		case cmd.Delete != nil:
-			if err := todo.DeleteTask(manager.Storer, cmd.Delete); err != nil {
+			if err := manager.DeleteTask(cmd.Delete); err != nil {
 				fmt.Println("Error:", err)
 			}
 		case cmd.Update != nil:
-			if err := todo.UpdateTasks(manager.Storer, cmd.Update); err != nil {
+			if err := manager.UpdateTasks(cmd.Update); err != nil {
 				fmt.Println("Error:", err)
 			}
 		case cmd.Done != nil:
-			if err := todo.ToggleDone(manager.Storer, cmd.Done); err != nil {
+			if err := manager.ToggleDone(cmd.Done); err != nil {
 				fmt.Println("Error:", err)
 			}
 		}

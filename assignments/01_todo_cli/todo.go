@@ -2,7 +2,7 @@ package todo
 
 // Todo is the main application struct that holds dependencies.
 type Todo struct {
-	Storer Storer
+	store storer
 }
 
 // Option is a functional option for configuring Todo.
@@ -11,22 +11,22 @@ type Option func(*Todo)
 // WithFileStorer sets a FileStore with the given path.
 func WithFileStorer(path string) Option {
 	return func(t *Todo) {
-		t.Storer = NewFileStore(path)
+		t.store = NewFileStore(path)
 	}
 }
 
 // WithMemoryStorer sets an in-memory store.
 func WithMemoryStorer() Option {
 	return func(t *Todo) {
-		t.Storer = NewMemoryStore()
+		t.store = NewMemoryStore()
 	}
 }
 
 // New creates a new Todo with sensible defaults.
-// Default store uses "tasks.json".
+// Default store uses in-memory.
 func New(opts ...Option) *Todo {
 	t := &Todo{
-		Storer: NewMemoryStore(),
+		store: NewMemoryStore(),
 	}
 	for _, opt := range opts {
 		opt(t)
