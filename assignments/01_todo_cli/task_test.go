@@ -44,7 +44,10 @@ func TestAddTask(t *testing.T) {
 				!tasks[0].Done
 		}).Return(nil)
 
-		AddTask(mock, &AddCmd{Title: "Buy groceries", Description: "Milk and eggs", Priority: "high"})
+		err := AddTask(mock, &AddCmd{Title: "Buy groceries", Description: "Milk and eggs", Priority: "high"})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
 	t.Run("default priority is low", func(t *testing.T) {
@@ -54,7 +57,10 @@ func TestAddTask(t *testing.T) {
 			return tasks[0].Priority == "low"
 		}).Return(nil)
 
-		AddTask(mock, &AddCmd{Title: "Task"})
+		err := AddTask(mock, &AddCmd{Title: "Task"})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
 	t.Run("appends to existing tasks", func(t *testing.T) {
@@ -65,23 +71,31 @@ func TestAddTask(t *testing.T) {
 			return len(tasks) == 2 && tasks[1].Id == 4
 		}).Return(nil)
 
-		AddTask(mock, &AddCmd{Title: "New", Priority: "high"})
+		err := AddTask(mock, &AddCmd{Title: "New", Priority: "high"})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
-	t.Run("does not save on load error", func(t *testing.T) {
+	t.Run("returns error on load failure", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("disk error"))
-		// No Save EXPECT — if AddTask calls Save, it panics
 
-		AddTask(mock, &AddCmd{Title: "Test"})
+		err := AddTask(mock, &AddCmd{Title: "Test"})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 
-	t.Run("handles save error", func(t *testing.T) {
+	t.Run("returns error on save failure", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return([]Task{}, nil)
 		mock.EXPECT().Save(t).Return(fmt.Errorf("write failed"))
 
-		AddTask(mock, &AddCmd{Title: "Test"})
+		err := AddTask(mock, &AddCmd{Title: "Test"})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 }
 
@@ -96,7 +110,10 @@ func TestToggleDone(t *testing.T) {
 			return tasks[0].Done == true
 		}).Return(nil)
 
-		ToggleDone(mock, &DoneCmd{Id: 1})
+		err := ToggleDone(mock, &DoneCmd{Id: 1})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
 	t.Run("marks task as pending", func(t *testing.T) {
@@ -107,21 +124,30 @@ func TestToggleDone(t *testing.T) {
 			return tasks[0].Done == false
 		}).Return(nil)
 
-		ToggleDone(mock, &DoneCmd{Id: 1})
+		err := ToggleDone(mock, &DoneCmd{Id: 1})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
-	t.Run("not found does not save", func(t *testing.T) {
+	t.Run("returns error when not found", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return([]Task{}, nil)
 
-		ToggleDone(mock, &DoneCmd{Id: 999})
+		err := ToggleDone(mock, &DoneCmd{Id: 999})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 
-	t.Run("does not save on load error", func(t *testing.T) {
+	t.Run("returns error on load failure", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
 
-		ToggleDone(mock, &DoneCmd{Id: 1})
+		err := ToggleDone(mock, &DoneCmd{Id: 1})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 }
 
@@ -139,21 +165,30 @@ func TestDeleteTask(t *testing.T) {
 			return len(tasks) == 1 && tasks[0].Id == 2
 		}).Return(nil)
 
-		DeleteTask(mock, &DeleteCmd{Id: 1})
+		err := DeleteTask(mock, &DeleteCmd{Id: 1})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
-	t.Run("not found does not save", func(t *testing.T) {
+	t.Run("returns error when not found", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return([]Task{}, nil)
 
-		DeleteTask(mock, &DeleteCmd{Id: 999})
+		err := DeleteTask(mock, &DeleteCmd{Id: 999})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 
-	t.Run("does not save on load error", func(t *testing.T) {
+	t.Run("returns error on load failure", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
 
-		DeleteTask(mock, &DeleteCmd{Id: 1})
+		err := DeleteTask(mock, &DeleteCmd{Id: 1})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 }
 
@@ -170,7 +205,10 @@ func TestUpdateTasks(t *testing.T) {
 				tasks[0].Priority == "low"
 		}).Return(nil)
 
-		UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "New"})
+		err := UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "New"})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
 	t.Run("updates all fields", func(t *testing.T) {
@@ -183,21 +221,30 @@ func TestUpdateTasks(t *testing.T) {
 				tasks[0].Priority == "high"
 		}).Return(nil)
 
-		UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "New", Description: "new desc", Priority: "high"})
+		err := UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "New", Description: "new desc", Priority: "high"})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
-	t.Run("not found does not save", func(t *testing.T) {
+	t.Run("returns error when not found", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return([]Task{}, nil)
 
-		UpdateTasks(mock, &UpdateCmd{Id: 999, Title: "title"})
+		err := UpdateTasks(mock, &UpdateCmd{Id: 999, Title: "title"})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 
-	t.Run("does not save on load error", func(t *testing.T) {
+	t.Run("returns error on load failure", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
 
-		UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "title"})
+		err := UpdateTasks(mock, &UpdateCmd{Id: 1, Title: "title"})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 }
 
@@ -208,7 +255,10 @@ func TestListTasks(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return([]Task{}, nil)
 
-		ListTasks(mock, &ListCmd{})
+		err := ListTasks(mock, &ListCmd{})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
 	t.Run("loads tasks without error", func(t *testing.T) {
@@ -219,13 +269,19 @@ func TestListTasks(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return(tasks, nil)
 
-		ListTasks(mock, &ListCmd{})
+		err := ListTasks(mock, &ListCmd{})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
 	})
 
-	t.Run("handles load error", func(t *testing.T) {
+	t.Run("returns error on load failure", func(t *testing.T) {
 		mock := testStorer()
 		mock.EXPECT().Load(t).Return(nil, fmt.Errorf("error"))
 
-		ListTasks(mock, &ListCmd{})
+		err := ListTasks(mock, &ListCmd{})
+		if err == nil {
+			t.Fatal("expected error")
+		}
 	})
 }

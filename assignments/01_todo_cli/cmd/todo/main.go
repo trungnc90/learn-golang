@@ -31,15 +31,25 @@ func main() {
 		case cmd.Help:
 			printUsage()
 		case cmd.Add != nil:
-			todo.AddTask(store, cmd.Add)
+			if err := todo.AddTask(store, cmd.Add); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.List != nil:
-			todo.ListTasks(store, cmd.List)
+			if err := todo.ListTasks(store, cmd.List); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.Delete != nil:
-			todo.DeleteTask(store, cmd.Delete)
+			if err := todo.DeleteTask(store, cmd.Delete); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.Update != nil:
-			todo.UpdateTasks(store, cmd.Update)
+			if err := todo.UpdateTasks(store, cmd.Update); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.Done != nil:
-			todo.ToggleDone(store, cmd.Done)
+			if err := todo.ToggleDone(store, cmd.Done); err != nil {
+				fmt.Println("Error:", err)
+			}
 		}
 	}
 }
