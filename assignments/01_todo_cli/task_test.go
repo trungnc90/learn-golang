@@ -11,8 +11,8 @@ import (
 )
 
 // newTestTodo creates a Todo with a mock storer for testing.
-func newTestTodo() (*Todo, *storer0) {
-	mock := teststorer()
+func newTestTodo() (*Todo, *storer) {
+	mock := testStorer()
 	return &Todo{store: mock}, mock
 }
 

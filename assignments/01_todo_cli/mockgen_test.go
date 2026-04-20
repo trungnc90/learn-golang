@@ -223,8 +223,8 @@ func mockgenBasicComparisonMatcher[T comparable](want T) func(T) bool {
 	}
 }
 
-func teststorer() *storer0 {
-	return &storer0{td: &storerTestDouble{location: mockgenCallerLocation(2)}}
+func testStorer() *storer {
+	return &storer{td: &storerTestDouble{location: mockgenCallerLocation(2)}}
 }
 
 type storerTestDouble struct {
@@ -233,20 +233,20 @@ type storerTestDouble struct {
 	Save     *storerSave
 }
 
-type storer0 struct {
+type storer struct {
 	td *storerTestDouble
 }
 
-func (m *storer0) STUB() *storerStubber {
+func (m *storer) STUB() *storerStubber {
 	return &storerStubber{target: m}
 }
 
-func (m *storer0) EXPECT() *storerExpecter {
+func (m *storer) EXPECT() *storerExpecter {
 	return &storerExpecter{target: m}
 }
 
-func (m *storer0) Load() ([]Task, error) {
-	v0, v1, v2 := "storer", "Load", "() ([]Task, error)"
+func (m *storer) Load() ([]Task, error) {
+	v0, v1, v2 := "Storer", "Load", "() ([]Task, error)"
 	v3 := []any{}
 
 	if m.td == nil {
@@ -268,8 +268,8 @@ func (m *storer0) Load() ([]Task, error) {
 	panic(mockgenMessageNotImplemented(v0, v1, v2, m.td.location, v3))
 }
 
-func (m *storer0) Save(tasks []Task) error {
-	v0, v1, v2 := "storer", "Save", "(tasks []Task) error"
+func (m *storer) Save(tasks []Task) error {
+	v0, v1, v2 := "Storer", "Save", "(tasks []Task) error"
 	v3 := []any{"tasks", tasks}
 
 	if m.td == nil {
@@ -292,7 +292,7 @@ func (m *storer0) Save(tasks []Task) error {
 }
 
 type storerStubber struct {
-	target *storer0
+	target *storer
 }
 
 func (s *storerStubber) Load(stub func() ([]Task, error)) *storerLoad {
@@ -350,7 +350,7 @@ func (s *storerStubber) Save(stub func(tasks []Task) error) *storerSave {
 }
 
 type storerExpecter struct {
-	target *storer0
+	target *storer
 }
 
 func (e *storerExpecter) Load(tb testing.TB) *storerLoadExpecter {
@@ -441,7 +441,7 @@ func (m *storerLoad) methodName() string {
 }
 
 func (m *storerLoad) interfaceName() string {
-	return "storer"
+	return "Storer"
 }
 
 func (m *storerLoad) fatal(index int, msg string) {
@@ -533,7 +533,7 @@ func (m *storerSave) methodName() string {
 }
 
 func (m *storerSave) interfaceName() string {
-	return "storer"
+	return "Storer"
 }
 
 func (m *storerSave) fatal(index int, msg string) {

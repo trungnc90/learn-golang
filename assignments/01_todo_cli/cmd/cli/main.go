@@ -6,10 +6,12 @@ import (
 	"os"
 
 	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
+	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/infra"
 )
 
 func main() {
-	manager := todo.New(todo.WithFileStorer("tasks.json"))
+	fs := infra.NewFileStore("tasks.json")
+	manager := todo.New(todo.WithStorer(fs))
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {

@@ -1,8 +1,10 @@
-package todo
+package infra
 
 import (
 	"os"
 	"testing"
+
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
 )
 
 func newTestFileStore(t *testing.T) *FileStore {
@@ -27,7 +29,7 @@ func TestFileStore(t *testing.T) {
 
 	t.Run("save and load round trip", func(t *testing.T) {
 		store := newTestFileStore(t)
-		original := []Task{
+		original := []todo.Task{
 			{Id: 1, Title: "Task A", Priority: "high"},
 			{Id: 2, Title: "Task B", Priority: "low"},
 		}
@@ -48,8 +50,8 @@ func TestFileStore(t *testing.T) {
 
 	t.Run("save overwrites previous data", func(t *testing.T) {
 		store := newTestFileStore(t)
-		store.Save([]Task{{Id: 1, Title: "Old"}})
-		store.Save([]Task{{Id: 1, Title: "New"}, {Id: 2, Title: "Extra"}})
+		store.Save([]todo.Task{{Id: 1, Title: "Old"}})
+		store.Save([]todo.Task{{Id: 1, Title: "New"}, {Id: 2, Title: "Extra"}})
 		tasks, _ := store.Load()
 		if len(tasks) != 2 {
 			t.Fatalf("expected 2 tasks, got %d", len(tasks))
@@ -61,8 +63,8 @@ func TestFileStore(t *testing.T) {
 
 	t.Run("save empty clears data", func(t *testing.T) {
 		store := newTestFileStore(t)
-		store.Save([]Task{{Id: 1, Title: "Task"}})
-		store.Save([]Task{})
+		store.Save([]todo.Task{{Id: 1, Title: "Task"}})
+		store.Save([]todo.Task{})
 		tasks, _ := store.Load()
 		if len(tasks) != 0 {
 			t.Fatalf("expected 0 tasks, got %d", len(tasks))
@@ -71,7 +73,7 @@ func TestFileStore(t *testing.T) {
 
 	t.Run("load returns a copy", func(t *testing.T) {
 		store := newTestFileStore(t)
-		store.Save([]Task{{Id: 1, Title: "Original"}})
+		store.Save([]todo.Task{{Id: 1, Title: "Original"}})
 		loaded, _ := store.Load()
 		loaded[0].Title = "Mutated"
 		fresh, _ := store.Load()
