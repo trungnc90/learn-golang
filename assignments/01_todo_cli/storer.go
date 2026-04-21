@@ -12,9 +12,9 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-// Store defines the interface for task persistence.
-// Any storage backend (file, database, memory) can implement this.
-type Store interface {
+// Storer defines the interface for task persistence.
+//go:generate go-mock-gen --interface=Storer
+type Storer interface {
 	Load() ([]Task, error)
 	Save(tasks []Task) error
 }

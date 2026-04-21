@@ -6,10 +6,12 @@ import (
 	"os"
 
 	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
+	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/infra"
 )
 
 func main() {
-	store := todo.NewFileStore("tasks.json")
+	fs := infra.NewFileStore("tasks.json")
+	manager := todo.New(todo.WithStorer(fs))
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {
@@ -31,15 +33,25 @@ func main() {
 		case cmd.Help:
 			printUsage()
 		case cmd.Add != nil:
-			todo.AddTask(store, cmd.Add)
+			if err := manager.AddTask(cmd.Add); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.List != nil:
-			todo.ListTasks(store, cmd.List)
+			if err := manager.ListTasks(cmd.List); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.Delete != nil:
-			todo.DeleteTask(store, cmd.Delete)
+			if err := manager.DeleteTask(cmd.Delete); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.Update != nil:
-			todo.UpdateTasks(store, cmd.Update)
+			if err := manager.UpdateTasks(cmd.Update); err != nil {
+				fmt.Println("Error:", err)
+			}
 		case cmd.Done != nil:
-			todo.ToggleDone(store, cmd.Done)
+			if err := manager.ToggleDone(cmd.Done); err != nil {
+				fmt.Println("Error:", err)
+			}
 		}
 	}
 }
