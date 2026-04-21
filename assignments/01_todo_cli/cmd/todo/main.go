@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"text/tabwriter"
 
 	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
 	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/infra"
@@ -33,27 +34,63 @@ func main() {
 		case cmd.Help:
 			printUsage()
 		case cmd.Add != nil:
-			if err := manager.AddTask(cmd.Add); err != nil {
+			task, err := manager.AddTask(cmd.Add)
+			if err != nil {
 				fmt.Println("Error:", err)
+			} else {
+				fmt.Printf("Added task %d: %s\n", task.Id, task.Title)
 			}
 		case cmd.List != nil:
-			if err := manager.ListTasks(cmd.List); err != nil {
+			tasks, err := manager.ListTasks(cmd.List)
+			if err != nil {
 				fmt.Println("Error:", err)
+			} else {
+				printTasks(tasks)
 			}
 		case cmd.Delete != nil:
 			if err := manager.DeleteTask(cmd.Delete); err != nil {
 				fmt.Println("Error:", err)
+			} else {
+				fmt.Printf("Deleted task #%d\n", cmd.Delete.Id)
 			}
 		case cmd.Update != nil:
-			if err := manager.UpdateTasks(cmd.Update); err != nil {
+			task, err := manager.UpdateTasks(cmd.Update)
+			if err != nil {
 				fmt.Println("Error:", err)
+			} else {
+				fmt.Printf("Updated task #%d\n", task.Id)
 			}
 		case cmd.Done != nil:
-			if err := manager.ToggleDone(cmd.Done); err != nil {
+			task, err := manager.ToggleDone(cmd.Done)
+			if err != nil {
 				fmt.Println("Error:", err)
+			} else {
+				status := "pending"
+				if task.Done {
+					status = "done"
+				}
+				fmt.Printf("Mark task #%d as %s\n", task.Id, status)
 			}
 		}
 	}
+}
+
+func printTasks(tasks []todo.Task) {
+	if len(tasks) == 0 {
+		fmt.Println("No tasks found")
+		return
+	}
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "ID\tStatus\tPriority\tTitle\tDescription")
+	fmt.Fprintln(w, "--\t------\t--------\t-----\t-----------")
+	for _, t := range tasks {
+		status := "[ ]"
+		if t.Done {
+			status = "[x]"
+		}
+		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n", t.Id, status, t.Priority, t.Title, t.Description)
+	}
+	w.Flush()
 }
 
 func printUsage() {
