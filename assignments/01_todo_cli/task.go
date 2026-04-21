@@ -2,8 +2,6 @@ package todo
 
 import (
 	"fmt"
-	"os"
-	"text/tabwriter"
 	"time"
 )
 
@@ -17,10 +15,10 @@ func nextId(tasks []Task) int {
 	return maxID + 1
 }
 
-func (t *Todo) AddTask(cmd *AddCmd) error {
+func (t *Todo) AddTask(cmd *AddCmd) (*Task, error) {
 	tasks, err := t.store.Load()
 	if err != nil {
-		return fmt.Errorf("load tasks: %w", err)
+		return nil, fmt.Errorf("load tasks: %w", err)
 	}
 
 	priority := cmd.Priority
@@ -39,51 +37,38 @@ func (t *Todo) AddTask(cmd *AddCmd) error {
 
 	tasks = append(tasks, task)
 	if err := t.store.Save(tasks); err != nil {
-		return fmt.Errorf("save tasks: %w", err)
+		return nil, fmt.Errorf("save tasks: %w", err)
 	}
 
-	fmt.Printf("Added task %d: %s\n", task.Id, task.Title)
-	return nil
+	return &task, nil
 }
 
-func (t *Todo) ListTasks(cmd *ListCmd) error {
+func (t *Todo) ListTasks(cmd *ListCmd) ([]Task, error) {
 	tasks, err := t.store.Load()
 	if err != nil {
-		return fmt.Errorf("load tasks: %w", err)
+		return nil, fmt.Errorf("load tasks: %w", err)
 	}
 
-	if len(tasks) == 0 {
-		fmt.Println("No tasks found")
-		return nil
+	if cmd.Filter == "" {
+		return tasks, nil
 	}
 
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ID\tStatus\tPriority\tTitle\tDescription")
-	fmt.Fprintln(w, "--\t------\t--------\t-----\t-----------")
-
+	var filtered []Task
 	for _, task := range tasks {
-		if cmd.Filter == "done" && !task.Done {
-			continue
+		if cmd.Filter == "done" && task.Done {
+			filtered = append(filtered, task)
 		}
-		if cmd.Filter == "pending" && task.Done {
-			continue
+		if cmd.Filter == "pending" && !task.Done {
+			filtered = append(filtered, task)
 		}
-
-		status := "[ ]"
-		if task.Done {
-			status = "[x]"
-		}
-
-		fmt.Fprintf(w, "%d\t%s\t%s\t%s\t%s\n", task.Id, status, task.Priority, task.Title, task.Description)
 	}
-	w.Flush()
-	return nil
+	return filtered, nil
 }
 
-func (t *Todo) UpdateTasks(cmd *UpdateCmd) error {
+func (t *Todo) UpdateTasks(cmd *UpdateCmd) (*Task, error) {
 	tasks, err := t.store.Load()
 	if err != nil {
-		return fmt.Errorf("load tasks: %w", err)
+		return nil, fmt.Errorf("load tasks: %w", err)
 	}
 
 	for i, task := range tasks {
@@ -99,14 +84,12 @@ func (t *Todo) UpdateTasks(cmd *UpdateCmd) error {
 			}
 
 			if err := t.store.Save(tasks); err != nil {
-				return fmt.Errorf("save tasks: %w", err)
+				return nil, fmt.Errorf("save tasks: %w", err)
 			}
-
-			fmt.Printf("update task #%d successfully\n", task.Id)
-			return nil
+			return &tasks[i], nil
 		}
 	}
-	return fmt.Errorf("task #%d not found", cmd.Id)
+	return nil, fmt.Errorf("task #%d not found", cmd.Id)
 }
 
 func (t *Todo) DeleteTask(cmd *DeleteCmd) error {
@@ -121,33 +104,26 @@ func (t *Todo) DeleteTask(cmd *DeleteCmd) error {
 			if err := t.store.Save(tasks); err != nil {
 				return fmt.Errorf("save tasks: %w", err)
 			}
-
-			fmt.Printf("Deleted task #%d\n", task.Id)
 			return nil
 		}
 	}
 	return fmt.Errorf("task #%d not found", cmd.Id)
 }
 
-func (t *Todo) ToggleDone(cmd *DoneCmd) error {
+func (t *Todo) ToggleDone(cmd *DoneCmd) (*Task, error) {
 	tasks, err := t.store.Load()
 	if err != nil {
-		return fmt.Errorf("load tasks: %w", err)
+		return nil, fmt.Errorf("load tasks: %w", err)
 	}
 
 	for i, task := range tasks {
 		if task.Id == cmd.Id {
 			tasks[i].Done = !tasks[i].Done
 			if err := t.store.Save(tasks); err != nil {
-				return fmt.Errorf("save tasks: %w", err)
+				return nil, fmt.Errorf("save tasks: %w", err)
 			}
-			status := "pending"
-			if tasks[i].Done {
-				status = "done"
-			}
-			fmt.Printf("Mark task #%d as %s\n", tasks[i].Id, status)
-			return nil
+			return &tasks[i], nil
 		}
 	}
-	return fmt.Errorf("task #%d not found", cmd.Id)
+	return nil, fmt.Errorf("task #%d not found", cmd.Id)
 }
