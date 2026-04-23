@@ -1,20 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 
 	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
 	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/infra"
-	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/internal/handler"
+	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/rest"
 )
 
 func main() {
-	fs := infra.NewFileStore("tasks.json")
-	manager := todo.New(todo.WithStorer(fs))
-	mux := handler.NewMux(manager)
+	storer := infra.NewFileStore("tasks.json")
+	manager := todo.NewManager(storer)
+	server := rest.NewServer(manager)
 
-	fmt.Println("Todo API running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", mux))
+	log.Fatal(server.Run(":8080"))
 }

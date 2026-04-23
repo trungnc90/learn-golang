@@ -1,4 +1,4 @@
-package handler
+package rest
 
 import (
 	"encoding/json"
@@ -8,28 +8,37 @@ import (
 	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
 )
 
-//go:generate go-mock-gen -i TaskManager
-type TaskManager interface {
-	AddTask(cmd *todo.AddCmd) (*todo.Task, error)
-	ListTasks(cmd *todo.ListCmd) ([]todo.Task, error)
-	UpdateTasks(cmd *todo.UpdateCmd) (*todo.Task, error)
-	DeleteTask(cmd *todo.DeleteCmd) error
-	ToggleDone(cmd *todo.DoneCmd) (*todo.Task, error)
-}
-
+//go:generate go-mock-gen --struct=Server
 type Server struct {
-	manager TaskManager
+	manager todo.Manager
 }
 
-func NewMux(manager TaskManager) *http.ServeMux {
-	s := &Server{manager: manager}
+func NewServer(manager todo.Manager) *Server {
+	return &Server{manager: manager}
+}
+
+type route struct {
+	pattern string
+	handler http.HandlerFunc
+}
+
+func (s *Server) Run(addr string) error {
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /tasks", s.HandleListTasks)
-	mux.HandleFunc("POST /tasks", s.HandleAddTask)
-	mux.HandleFunc("PUT /tasks/{id}", s.HandleUpdateTask)
-	mux.HandleFunc("DELETE /tasks/{id}", s.HandleDeleteTask)
-	mux.HandleFunc("PATCH /tasks/{id}/toggle", s.HandleToggleDone)
-	return mux
+
+	routes := []route{
+		{"GET /tasks", s.HandleListTasks},
+		{"POST /tasks", s.HandleAddTask},
+		{"PUT /tasks/{id}", s.HandleUpdateTask},
+		{"DELETE /tasks/{id}", s.HandleDeleteTask},
+		{"PATCH /tasks/{id}/toggle", s.HandleToggleDone},
+	}
+
+	for _, r := range routes {
+		mux.HandleFunc(r.pattern, r.handler)
+	}
+
+	fmt.Printf("Todo API running on http://%s\n", addr)
+	return http.ListenAndServe(addr, mux)
 }
 
 func (s *Server) HandleListTasks(w http.ResponseWriter, r *http.Request) {
