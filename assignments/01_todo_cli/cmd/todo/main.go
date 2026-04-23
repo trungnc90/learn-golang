@@ -11,8 +11,8 @@ import (
 )
 
 func main() {
-	fs := infra.NewFileStore("tasks.json")
-	manager := todo.New(todo.WithStorer(fs))
+	storer := infra.NewFileStore("tasks.json")
+	manager := todo.NewManager(storer)
 	scanner := bufio.NewScanner(os.Stdin)
 
 	for {

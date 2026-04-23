@@ -13,7 +13,7 @@ import (
 // newTestTodo creates a Todo with a mock storer for testing.
 func newTestTodo() (*Todo, *storer) {
 	mock := testStorer()
-	return &Todo{store: mock}, mock
+	return NewManager(mock), mock
 }
 
 // --- nextId ---
