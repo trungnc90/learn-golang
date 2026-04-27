@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo"
 )
 
 func newTestServer(t *testing.T) (*Server, *manager) {

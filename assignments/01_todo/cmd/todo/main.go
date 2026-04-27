@@ -6,8 +6,8 @@ import (
 	"os"
 	"text/tabwriter"
 
-	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
-	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/infra"
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo"
+	"github.com/trungnc90/learn-golang/assignments/01_todo/infra"
 )
 
 func main() {

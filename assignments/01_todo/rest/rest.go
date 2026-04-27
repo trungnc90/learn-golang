@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo"
 )
 
 //go:generate go-mock-gen --struct=Server

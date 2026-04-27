@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo"
 )
 
 // FileStore implements Storer using a JSON file.
