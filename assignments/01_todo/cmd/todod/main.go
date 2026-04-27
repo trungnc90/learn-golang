@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
-	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/infra"
-	"github.com/trungnc90/learn-golang/assignments/01_todo_cli/rest"
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo"
+	"github.com/trungnc90/learn-golang/assignments/01_todo/infra"
+	"github.com/trungnc90/learn-golang/assignments/01_todo/rest"
 )
 
 func main() {

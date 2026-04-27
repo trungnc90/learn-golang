@@ -4,13 +4,14 @@ package rest
 
 import (
 	"fmt"
-	todocli "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
 	"path/filepath"
 	"reflect"
 	"runtime"
 	"strconv"
 	"strings"
 	"testing"
+
+	todocli "github.com/trungnc90/learn-golang/assignments/01_todo"
 )
 
 func mockgenCallerLocation(skip int) string {

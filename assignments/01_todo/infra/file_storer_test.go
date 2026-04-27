@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	todo "github.com/trungnc90/learn-golang/assignments/01_todo_cli"
+	todo "github.com/trungnc90/learn-golang/assignments/01_todo"
 )
 
 func newTestFileStore(t *testing.T) *FileStore {
