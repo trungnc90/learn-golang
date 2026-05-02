@@ -54,9 +54,10 @@ func (ps *PostgresStore) Create(task todo.Task) (todo.Task, error) {
 
 func (ps *PostgresStore) List(filter string) ([]todo.Task, error) {
 	query := `SELECT id, title, description, priority, done, created_at FROM tasks`
-	if filter == "done" {
+	switch filter {
+	case "done":
 		query += ` WHERE done = true`
-	} else if filter == "pending" {
+	case "pending":
 		query += ` WHERE done = false`
 	}
 	query += ` ORDER BY id`
