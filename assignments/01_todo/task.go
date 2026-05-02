@@ -5,29 +5,13 @@ import (
 	"time"
 )
 
-func nextId(tasks []Task) int {
-	maxID := 0
-	for _, t := range tasks {
-		if t.Id > maxID {
-			maxID = t.Id
-		}
-	}
-	return maxID + 1
-}
-
 func (t *Todo) AddTask(cmd *AddCmd) (*Task, error) {
-	tasks, err := t.store.Load()
-	if err != nil {
-		return nil, fmt.Errorf("load tasks: %w", err)
-	}
-
 	priority := cmd.Priority
 	if priority == "" {
 		priority = "low"
 	}
 
 	task := Task{
-		Id:          nextId(tasks),
 		Title:       cmd.Title,
 		Description: cmd.Description,
 		Priority:    priority,
@@ -35,95 +19,49 @@ func (t *Todo) AddTask(cmd *AddCmd) (*Task, error) {
 		CreatedAt:   time.Now(),
 	}
 
-	tasks = append(tasks, task)
-	if err := t.store.Save(tasks); err != nil {
-		return nil, fmt.Errorf("save tasks: %w", err)
+	created, err := t.store.Create(task)
+	if err != nil {
+		return nil, fmt.Errorf("create task: %w", err)
 	}
 
-	return &task, nil
+	return &created, nil
 }
 
 func (t *Todo) ListTasks(cmd *ListCmd) ([]Task, error) {
-	tasks, err := t.store.Load()
+	tasks, err := t.store.List(cmd.Filter)
 	if err != nil {
-		return nil, fmt.Errorf("load tasks: %w", err)
+		return nil, fmt.Errorf("list tasks: %w", err)
 	}
-
-	if cmd.Filter == "" {
-		return tasks, nil
-	}
-
-	var filtered []Task
-	for _, task := range tasks {
-		if cmd.Filter == "done" && task.Done {
-			filtered = append(filtered, task)
-		}
-		if cmd.Filter == "pending" && !task.Done {
-			filtered = append(filtered, task)
-		}
-	}
-	return filtered, nil
+	return tasks, nil
 }
 
 func (t *Todo) UpdateTasks(cmd *UpdateCmd) (*Task, error) {
-	tasks, err := t.store.Load()
+	task := Task{
+		Id:          cmd.Id,
+		Title:       cmd.Title,
+		Description: cmd.Description,
+		Priority:    cmd.Priority,
+	}
+
+	updated, err := t.store.Update(task)
 	if err != nil {
-		return nil, fmt.Errorf("load tasks: %w", err)
+		return nil, fmt.Errorf("update task: %w", err)
 	}
 
-	for i, task := range tasks {
-		if task.Id == cmd.Id {
-			if cmd.Title != "" {
-				tasks[i].Title = cmd.Title
-			}
-			if cmd.Description != "" {
-				tasks[i].Description = cmd.Description
-			}
-			if cmd.Priority != "" {
-				tasks[i].Priority = cmd.Priority
-			}
-
-			if err := t.store.Save(tasks); err != nil {
-				return nil, fmt.Errorf("save tasks: %w", err)
-			}
-			return &tasks[i], nil
-		}
-	}
-	return nil, fmt.Errorf("task #%d not found", cmd.Id)
+	return &updated, nil
 }
 
 func (t *Todo) DeleteTask(cmd *DeleteCmd) error {
-	tasks, err := t.store.Load()
-	if err != nil {
-		return fmt.Errorf("load tasks: %w", err)
+	if err := t.store.Delete(cmd.Id); err != nil {
+		return fmt.Errorf("delete task: %w", err)
 	}
-
-	for i, task := range tasks {
-		if task.Id == cmd.Id {
-			tasks = append(tasks[:i], tasks[i+1:]...)
-			if err := t.store.Save(tasks); err != nil {
-				return fmt.Errorf("save tasks: %w", err)
-			}
-			return nil
-		}
-	}
-	return fmt.Errorf("task #%d not found", cmd.Id)
+	return nil
 }
 
 func (t *Todo) ToggleDone(cmd *DoneCmd) (*Task, error) {
-	tasks, err := t.store.Load()
+	task, err := t.store.ToggleDone(cmd.Id)
 	if err != nil {
-		return nil, fmt.Errorf("load tasks: %w", err)
+		return nil, fmt.Errorf("toggle done: %w", err)
 	}
-
-	for i, task := range tasks {
-		if task.Id == cmd.Id {
-			tasks[i].Done = !tasks[i].Done
-			if err := t.store.Save(tasks); err != nil {
-				return nil, fmt.Errorf("save tasks: %w", err)
-			}
-			return &tasks[i], nil
-		}
-	}
-	return nil, fmt.Errorf("task #%d not found", cmd.Id)
+	return &task, nil
 }

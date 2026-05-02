@@ -16,9 +16,57 @@ func newTestFileStore(t *testing.T) *FileStore {
 }
 
 func TestFileStore(t *testing.T) {
-	t.Run("load from missing file", func(t *testing.T) {
+	t.Run("create assigns id", func(t *testing.T) {
 		store := newTestFileStore(t)
-		tasks, err := store.Load()
+		task, err := store.Create(todo.Task{Title: "Task A", Priority: "high"})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+		if task.Id != 1 {
+			t.Fatalf("expected id 1, got %d", task.Id)
+		}
+		if task.Title != "Task A" {
+			t.Fatalf("expected 'Task A', got '%s'", task.Title)
+		}
+	})
+
+	t.Run("create auto-increments id", func(t *testing.T) {
+		store := newTestFileStore(t)
+		store.Create(todo.Task{Title: "First"})
+		task, _ := store.Create(todo.Task{Title: "Second"})
+		if task.Id != 2 {
+			t.Fatalf("expected id 2, got %d", task.Id)
+		}
+	})
+
+	t.Run("list returns all tasks", func(t *testing.T) {
+		store := newTestFileStore(t)
+		store.Create(todo.Task{Title: "Task A"})
+		store.Create(todo.Task{Title: "Task B"})
+
+		tasks, err := store.List("")
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+		if len(tasks) != 2 {
+			t.Fatalf("expected 2 tasks, got %d", len(tasks))
+		}
+	})
+
+	t.Run("list filters done tasks", func(t *testing.T) {
+		store := newTestFileStore(t)
+		store.Create(todo.Task{Title: "Pending", Done: false})
+		store.Create(todo.Task{Title: "Done", Done: true})
+
+		tasks, _ := store.List("done")
+		if len(tasks) != 1 || tasks[0].Title != "Done" {
+			t.Fatalf("expected only done task")
+		}
+	})
+
+	t.Run("list from missing file returns empty", func(t *testing.T) {
+		store := newTestFileStore(t)
+		tasks, err := store.List("")
 		if err != nil {
 			t.Fatalf("expected no error, got %v", err)
 		}
@@ -27,58 +75,93 @@ func TestFileStore(t *testing.T) {
 		}
 	})
 
-	t.Run("save and load round trip", func(t *testing.T) {
+	t.Run("get by id returns task", func(t *testing.T) {
 		store := newTestFileStore(t)
-		original := []todo.Task{
-			{Id: 1, Title: "Task A", Priority: "high"},
-			{Id: 2, Title: "Task B", Priority: "low"},
-		}
-		if err := store.Save(original); err != nil {
-			t.Fatalf("Save failed: %v", err)
-		}
-		loaded, err := store.Load()
+		store.Create(todo.Task{Title: "Task A"})
+
+		task, err := store.GetByID(1)
 		if err != nil {
-			t.Fatalf("Load failed: %v", err)
+			t.Fatalf("expected no error, got %v", err)
 		}
-		if len(loaded) != 2 {
-			t.Fatalf("expected 2 tasks, got %d", len(loaded))
-		}
-		if loaded[0].Title != "Task A" || loaded[1].Title != "Task B" {
-			t.Fatal("task titles don't match")
+		if task.Title != "Task A" {
+			t.Fatalf("expected 'Task A', got '%s'", task.Title)
 		}
 	})
 
-	t.Run("save overwrites previous data", func(t *testing.T) {
+	t.Run("get by id returns error when not found", func(t *testing.T) {
 		store := newTestFileStore(t)
-		store.Save([]todo.Task{{Id: 1, Title: "Old"}})
-		store.Save([]todo.Task{{Id: 1, Title: "New"}, {Id: 2, Title: "Extra"}})
-		tasks, _ := store.Load()
-		if len(tasks) != 2 {
-			t.Fatalf("expected 2 tasks, got %d", len(tasks))
-		}
-		if tasks[0].Title != "New" {
-			t.Fatalf("expected 'New', got '%s'", tasks[0].Title)
+		_, err := store.GetByID(999)
+		if err == nil {
+			t.Fatal("expected error")
 		}
 	})
 
-	t.Run("save empty clears data", func(t *testing.T) {
+	t.Run("update modifies task", func(t *testing.T) {
 		store := newTestFileStore(t)
-		store.Save([]todo.Task{{Id: 1, Title: "Task"}})
-		store.Save([]todo.Task{})
-		tasks, _ := store.Load()
-		if len(tasks) != 0 {
-			t.Fatalf("expected 0 tasks, got %d", len(tasks))
+		store.Create(todo.Task{Title: "Old", Priority: "low"})
+
+		updated, err := store.Update(todo.Task{Id: 1, Title: "New", Priority: "high"})
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+		if updated.Title != "New" {
+			t.Fatalf("expected 'New', got '%s'", updated.Title)
+		}
+		if updated.Priority != "high" {
+			t.Fatalf("expected 'high', got '%s'", updated.Priority)
 		}
 	})
 
-	t.Run("load returns a copy", func(t *testing.T) {
+	t.Run("update returns error when not found", func(t *testing.T) {
 		store := newTestFileStore(t)
-		store.Save([]todo.Task{{Id: 1, Title: "Original"}})
-		loaded, _ := store.Load()
-		loaded[0].Title = "Mutated"
-		fresh, _ := store.Load()
-		if fresh[0].Title != "Original" {
-			t.Fatalf("expected 'Original', got '%s'", fresh[0].Title)
+		_, err := store.Update(todo.Task{Id: 999, Title: "Nope"})
+		if err == nil {
+			t.Fatal("expected error")
+		}
+	})
+
+	t.Run("delete removes task", func(t *testing.T) {
+		store := newTestFileStore(t)
+		store.Create(todo.Task{Title: "Task A"})
+		store.Create(todo.Task{Title: "Task B"})
+
+		err := store.Delete(1)
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+
+		tasks, _ := store.List("")
+		if len(tasks) != 1 {
+			t.Fatalf("expected 1 task, got %d", len(tasks))
+		}
+	})
+
+	t.Run("delete returns error when not found", func(t *testing.T) {
+		store := newTestFileStore(t)
+		err := store.Delete(999)
+		if err == nil {
+			t.Fatal("expected error")
+		}
+	})
+
+	t.Run("toggle done flips status", func(t *testing.T) {
+		store := newTestFileStore(t)
+		store.Create(todo.Task{Title: "Task", Done: false})
+
+		task, err := store.ToggleDone(1)
+		if err != nil {
+			t.Fatalf("expected no error, got %v", err)
+		}
+		if !task.Done {
+			t.Fatal("expected done=true")
+		}
+	})
+
+	t.Run("toggle done returns error when not found", func(t *testing.T) {
+		store := newTestFileStore(t)
+		_, err := store.ToggleDone(999)
+		if err == nil {
+			t.Fatal("expected error")
 		}
 	})
 
@@ -87,7 +170,7 @@ func TestFileStore(t *testing.T) {
 		os.WriteFile(path, []byte("not valid json"), 0644)
 		t.Cleanup(func() { os.Remove(path) })
 		store := NewFileStore(path)
-		_, err := store.Load()
+		_, err := store.List("")
 		if err == nil {
 			t.Fatal("expected error for corrupted JSON file")
 		}
