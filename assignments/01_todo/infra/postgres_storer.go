@@ -33,15 +33,37 @@ func (ps *PostgresStore) Close() error {
 	return ps.db.Close()
 }
 
-// Load retrieves all tasks from the database.
-func (ps *PostgresStore) Load() ([]todo.Task, error) {
-	rows, err := ps.db.Query(
-		`SELECT id, title, description, priority, done, created_at
-		 FROM tasks
-		 ORDER BY id`,
-	)
+func (ps *PostgresStore) Create(task todo.Task) (todo.Task, error) {
+	err := ps.db.QueryRow(
+		`INSERT INTO tasks (title, description, priority, done, created_at)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id, created_at`,
+		task.Title,
+		task.Description,
+		task.Priority,
+		task.Done,
+		task.CreatedAt,
+	).Scan(&task.Id, &task.CreatedAt)
+
 	if err != nil {
-		return nil, fmt.Errorf("query tasks: %w", err)
+		return todo.Task{}, fmt.Errorf("create task: %w", err)
+	}
+
+	return task, nil
+}
+
+func (ps *PostgresStore) List(filter string) ([]todo.Task, error) {
+	query := `SELECT id, title, description, priority, done, created_at FROM tasks`
+	if filter == "done" {
+		query += ` WHERE done = true`
+	} else if filter == "pending" {
+		query += ` WHERE done = false`
+	}
+	query += ` ORDER BY id`
+
+	rows, err := ps.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("list task: %w", err)
 	}
 	defer rows.Close()
 
@@ -61,37 +83,82 @@ func (ps *PostgresStore) Load() ([]todo.Task, error) {
 	if tasks == nil {
 		tasks = []todo.Task{}
 	}
-
 	return tasks, nil
+
 }
 
-// Save replaces all tasks in the database with the provided slice.
-// It uses a transaction to delete all existing rows and insert the new ones.
-func (ps *PostgresStore) Save(tasks []todo.Task) error {
-	tx, err := ps.db.Begin()
+func (ps *PostgresStore) GetByID(id int) (todo.Task, error) {
+	var task todo.Task
+	err := ps.db.QueryRow(
+		`SELECT id, title, description, priority, done, created_at
+		FROM tasks
+		WHERE id = $1`,
+		id,
+	).Scan(&task.Id, &task.Title, &task.Description, &task.Priority, &task.Done, &task.CreatedAt)
+
+	if err == sql.ErrNoRows {
+		return todo.Task{}, fmt.Errorf("id not found")
+	} else if err != nil {
+		return todo.Task{}, fmt.Errorf("get task: %w", err)
+	}
+
+	return task, nil
+}
+
+// Update modifies an existing task by ID and returns the updated task.
+func (ps *PostgresStore) Update(task todo.Task) (todo.Task, error) {
+	err := ps.db.QueryRow(
+		`UPDATE tasks
+		 SET title = $1, description = $2, priority = $3
+		 WHERE id = $4
+		 RETURNING id, title, description, priority, done, created_at`,
+		task.Title, task.Description, task.Priority, task.Id,
+	).Scan(&task.Id, &task.Title, &task.Description, &task.Priority, &task.Done, &task.CreatedAt)
+
+	if err == sql.ErrNoRows {
+		return todo.Task{}, fmt.Errorf("task #%d not found", task.Id)
+	} else if err != nil {
+		return todo.Task{}, fmt.Errorf("update task: %w", err)
+	}
+
+	return task, nil
+}
+
+// Delete removes a task by ID.
+func (ps *PostgresStore) Delete(id int) error {
+	result, err := ps.db.Exec(`DELETE FROM tasks WHERE id = $1`, id)
 	if err != nil {
-		return fmt.Errorf("begin transaction: %w", err)
-	}
-	defer tx.Rollback()
-
-	if _, err := tx.Exec(`DELETE FROM tasks`); err != nil {
-		return fmt.Errorf("delete tasks: %w", err)
+		return fmt.Errorf("delete task: %w", err)
 	}
 
-	for _, t := range tasks {
-		_, err := tx.Exec(
-			`INSERT INTO tasks (id, title, description, priority, done, created_at)
-			 VALUES ($1, $2, $3, $4, $5, $6)`,
-			t.Id, t.Title, t.Description, t.Priority, t.Done, t.CreatedAt,
-		)
-		if err != nil {
-			return fmt.Errorf("insert task %d: %w", t.Id, err)
-		}
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("rows affected: %w", err)
 	}
 
-	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("commit transaction: %w", err)
+	if rowsAffected == 0 {
+		return fmt.Errorf("task #%d not found", id)
 	}
 
 	return nil
+}
+
+// ToggleDone flips the done status of a task by ID and returns the updated task.
+func (ps *PostgresStore) ToggleDone(id int) (todo.Task, error) {
+	var task todo.Task
+	err := ps.db.QueryRow(
+		`UPDATE tasks
+		 SET done = NOT done
+		 WHERE id = $1
+		 RETURNING id, title, description, priority, done, created_at`,
+		id,
+	).Scan(&task.Id, &task.Title, &task.Description, &task.Priority, &task.Done, &task.CreatedAt)
+
+	if err == sql.ErrNoRows {
+		return todo.Task{}, fmt.Errorf("task #%d not found", id)
+	} else if err != nil {
+		return todo.Task{}, fmt.Errorf("toggle done: %w", err)
+	}
+
+	return task, nil
 }
