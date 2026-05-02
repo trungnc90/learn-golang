@@ -228,9 +228,13 @@ func testStorer() *storer {
 }
 
 type storerTestDouble struct {
-	location string
-	Load     *storerLoad
-	Save     *storerSave
+	location   string
+	Create     *storerCreate
+	Delete     *storerDelete
+	GetByID    *storerGetByID
+	List       *storerList
+	ToggleDone *storerToggleDone
+	Update     *storerUpdate
 }
 
 type storer struct {
@@ -245,47 +249,139 @@ func (m *storer) EXPECT() *storerExpecter {
 	return &storerExpecter{target: m}
 }
 
-func (m *storer) Load() ([]Task, error) {
-	v0, v1, v2 := "Storer", "Load", "() ([]Task, error)"
-	v3 := []any{}
+func (m *storer) Create(task Task) (Task, error) {
+	v0, v1, v2 := "Storer", "Create", "(task Task) (Task, error)"
+	v3 := []any{"task", task}
 
 	if m.td == nil {
 		panic(mockgenMessageNotImplemented(v0, v1, v2, "", v3))
 	}
 
-	if v4 := m.td.Load; v4 != nil {
+	if v4 := m.td.Create; v4 != nil {
 		switch {
 		case v4.stub != nil:
-			return v4.invokeStub()
+			return v4.invokeStub(task)
 		case len(v4.expects) > 0:
 			v5 := len(v4.Calls)
 			if v5 < len(v4.expects) {
 				v4.expects[v5].tb.Helper()
 			}
-			return v4.invokeExpect()
+			return v4.invokeExpect(task)
 		}
 	}
 	panic(mockgenMessageNotImplemented(v0, v1, v2, m.td.location, v3))
 }
 
-func (m *storer) Save(tasks []Task) error {
-	v0, v1, v2 := "Storer", "Save", "(tasks []Task) error"
-	v3 := []any{"tasks", tasks}
+func (m *storer) Delete(id int) error {
+	v0, v1, v2 := "Storer", "Delete", "(id int) error"
+	v3 := []any{"id", id}
 
 	if m.td == nil {
 		panic(mockgenMessageNotImplemented(v0, v1, v2, "", v3))
 	}
 
-	if v4 := m.td.Save; v4 != nil {
+	if v4 := m.td.Delete; v4 != nil {
 		switch {
 		case v4.stub != nil:
-			return v4.invokeStub(tasks)
+			return v4.invokeStub(id)
 		case len(v4.expects) > 0:
 			v5 := len(v4.Calls)
 			if v5 < len(v4.expects) {
 				v4.expects[v5].tb.Helper()
 			}
-			return v4.invokeExpect(tasks)
+			return v4.invokeExpect(id)
+		}
+	}
+	panic(mockgenMessageNotImplemented(v0, v1, v2, m.td.location, v3))
+}
+
+func (m *storer) GetByID(id int) (Task, error) {
+	v0, v1, v2 := "Storer", "GetByID", "(id int) (Task, error)"
+	v3 := []any{"id", id}
+
+	if m.td == nil {
+		panic(mockgenMessageNotImplemented(v0, v1, v2, "", v3))
+	}
+
+	if v4 := m.td.GetByID; v4 != nil {
+		switch {
+		case v4.stub != nil:
+			return v4.invokeStub(id)
+		case len(v4.expects) > 0:
+			v5 := len(v4.Calls)
+			if v5 < len(v4.expects) {
+				v4.expects[v5].tb.Helper()
+			}
+			return v4.invokeExpect(id)
+		}
+	}
+	panic(mockgenMessageNotImplemented(v0, v1, v2, m.td.location, v3))
+}
+
+func (m *storer) List(filter string) ([]Task, error) {
+	v0, v1, v2 := "Storer", "List", "(filter string) ([]Task, error)"
+	v3 := []any{"filter", filter}
+
+	if m.td == nil {
+		panic(mockgenMessageNotImplemented(v0, v1, v2, "", v3))
+	}
+
+	if v4 := m.td.List; v4 != nil {
+		switch {
+		case v4.stub != nil:
+			return v4.invokeStub(filter)
+		case len(v4.expects) > 0:
+			v5 := len(v4.Calls)
+			if v5 < len(v4.expects) {
+				v4.expects[v5].tb.Helper()
+			}
+			return v4.invokeExpect(filter)
+		}
+	}
+	panic(mockgenMessageNotImplemented(v0, v1, v2, m.td.location, v3))
+}
+
+func (m *storer) ToggleDone(id int) (Task, error) {
+	v0, v1, v2 := "Storer", "ToggleDone", "(id int) (Task, error)"
+	v3 := []any{"id", id}
+
+	if m.td == nil {
+		panic(mockgenMessageNotImplemented(v0, v1, v2, "", v3))
+	}
+
+	if v4 := m.td.ToggleDone; v4 != nil {
+		switch {
+		case v4.stub != nil:
+			return v4.invokeStub(id)
+		case len(v4.expects) > 0:
+			v5 := len(v4.Calls)
+			if v5 < len(v4.expects) {
+				v4.expects[v5].tb.Helper()
+			}
+			return v4.invokeExpect(id)
+		}
+	}
+	panic(mockgenMessageNotImplemented(v0, v1, v2, m.td.location, v3))
+}
+
+func (m *storer) Update(task Task) (Task, error) {
+	v0, v1, v2 := "Storer", "Update", "(task Task) (Task, error)"
+	v3 := []any{"task", task}
+
+	if m.td == nil {
+		panic(mockgenMessageNotImplemented(v0, v1, v2, "", v3))
+	}
+
+	if v4 := m.td.Update; v4 != nil {
+		switch {
+		case v4.stub != nil:
+			return v4.invokeStub(task)
+		case len(v4.expects) > 0:
+			v5 := len(v4.Calls)
+			if v5 < len(v4.expects) {
+				v4.expects[v5].tb.Helper()
+			}
+			return v4.invokeExpect(task)
 		}
 	}
 	panic(mockgenMessageNotImplemented(v0, v1, v2, m.td.location, v3))
@@ -295,15 +391,15 @@ type storerStubber struct {
 	target *storer
 }
 
-func (s *storerStubber) Load(stub func() ([]Task, error)) *storerLoad {
+func (s *storerStubber) Create(stub func(task Task) (Task, error)) *storerCreate {
 	if s.target.td == nil {
 		s.target.td = &storerTestDouble{}
 	}
 
-	m := s.target.td.Load
+	m := s.target.td.Create
 	if m == nil {
-		m = &storerLoad{stubLocation: mockgenCallerLocation(2)}
-		s.target.td.Load = m
+		m = &storerCreate{stubLocation: mockgenCallerLocation(2)}
+		s.target.td.Create = m
 	}
 
 	if stub == nil {
@@ -322,15 +418,123 @@ func (s *storerStubber) Load(stub func() ([]Task, error)) *storerLoad {
 	return m
 }
 
-func (s *storerStubber) Save(stub func(tasks []Task) error) *storerSave {
+func (s *storerStubber) Delete(stub func(id int) error) *storerDelete {
 	if s.target.td == nil {
 		s.target.td = &storerTestDouble{}
 	}
 
-	m := s.target.td.Save
+	m := s.target.td.Delete
 	if m == nil {
-		m = &storerSave{stubLocation: mockgenCallerLocation(2)}
-		s.target.td.Save = m
+		m = &storerDelete{stubLocation: mockgenCallerLocation(2)}
+		s.target.td.Delete = m
+	}
+
+	if stub == nil {
+		m.panic(mockgenMessageStubByNil(m, mockgenCallerLocation(2)))
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageDuplicateStub(m, m.stubLocation))
+	}
+
+	if len(m.expects) > 0 {
+		m.panic(mockgenMessageStubAfterExpect(m, m.expects[0].location))
+	}
+
+	m.stub = stub
+	return m
+}
+
+func (s *storerStubber) GetByID(stub func(id int) (Task, error)) *storerGetByID {
+	if s.target.td == nil {
+		s.target.td = &storerTestDouble{}
+	}
+
+	m := s.target.td.GetByID
+	if m == nil {
+		m = &storerGetByID{stubLocation: mockgenCallerLocation(2)}
+		s.target.td.GetByID = m
+	}
+
+	if stub == nil {
+		m.panic(mockgenMessageStubByNil(m, mockgenCallerLocation(2)))
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageDuplicateStub(m, m.stubLocation))
+	}
+
+	if len(m.expects) > 0 {
+		m.panic(mockgenMessageStubAfterExpect(m, m.expects[0].location))
+	}
+
+	m.stub = stub
+	return m
+}
+
+func (s *storerStubber) List(stub func(filter string) ([]Task, error)) *storerList {
+	if s.target.td == nil {
+		s.target.td = &storerTestDouble{}
+	}
+
+	m := s.target.td.List
+	if m == nil {
+		m = &storerList{stubLocation: mockgenCallerLocation(2)}
+		s.target.td.List = m
+	}
+
+	if stub == nil {
+		m.panic(mockgenMessageStubByNil(m, mockgenCallerLocation(2)))
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageDuplicateStub(m, m.stubLocation))
+	}
+
+	if len(m.expects) > 0 {
+		m.panic(mockgenMessageStubAfterExpect(m, m.expects[0].location))
+	}
+
+	m.stub = stub
+	return m
+}
+
+func (s *storerStubber) ToggleDone(stub func(id int) (Task, error)) *storerToggleDone {
+	if s.target.td == nil {
+		s.target.td = &storerTestDouble{}
+	}
+
+	m := s.target.td.ToggleDone
+	if m == nil {
+		m = &storerToggleDone{stubLocation: mockgenCallerLocation(2)}
+		s.target.td.ToggleDone = m
+	}
+
+	if stub == nil {
+		m.panic(mockgenMessageStubByNil(m, mockgenCallerLocation(2)))
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageDuplicateStub(m, m.stubLocation))
+	}
+
+	if len(m.expects) > 0 {
+		m.panic(mockgenMessageStubAfterExpect(m, m.expects[0].location))
+	}
+
+	m.stub = stub
+	return m
+}
+
+func (s *storerStubber) Update(stub func(task Task) (Task, error)) *storerUpdate {
+	if s.target.td == nil {
+		s.target.td = &storerTestDouble{}
+	}
+
+	m := s.target.td.Update
+	if m == nil {
+		m = &storerUpdate{stubLocation: mockgenCallerLocation(2)}
+		s.target.td.Update = m
 	}
 
 	if stub == nil {
@@ -353,15 +557,15 @@ type storerExpecter struct {
 	target *storer
 }
 
-func (e *storerExpecter) Load(tb testing.TB) *storerLoadExpecter {
+func (e *storerExpecter) Create(tb testing.TB) *storerCreateExpecter {
 	if e.target.td == nil {
 		e.target.td = &storerTestDouble{}
 	}
 
-	var m = e.target.td.Load
+	var m = e.target.td.Create
 	if m == nil {
-		m = &storerLoad{}
-		e.target.td.Load = m
+		m = &storerCreate{}
+		e.target.td.Create = m
 	}
 
 	if m.stub != nil {
@@ -373,44 +577,9 @@ func (e *storerExpecter) Load(tb testing.TB) *storerLoadExpecter {
 	}
 
 	idx := len(m.expects)
-	m.expects = append(m.expects, &storerLoadExpect{
-		location: mockgenCallerLocation(2),
-		index:    idx,
-		tb:       tb,
-	})
-
-	tb.Helper()
-	tb.Cleanup(func() {
-		tb.Helper()
-		m.verify(idx)
-	})
-
-	return &storerLoadExpecter{expect: m.expects[idx]}
-}
-
-func (e *storerExpecter) Save(tb testing.TB) *storerSaveExpecter {
-	if e.target.td == nil {
-		e.target.td = &storerTestDouble{}
-	}
-
-	var m = e.target.td.Save
-	if m == nil {
-		m = &storerSave{}
-		e.target.td.Save = m
-	}
-
-	if m.stub != nil {
-		m.panic(mockgenMessageExpectAfterStub(m, m.stubLocation))
-	}
-
-	if tb == nil {
-		m.panic(mockgenMessageExpectByNil(m))
-	}
-
-	idx := len(m.expects)
-	m.expects = append(m.expects, &storerSaveExpect{
+	m.expects = append(m.expects, &storerCreateExpect{
 		location:         mockgenCallerLocation(2),
-		matcher:          &storerSaveArgumentMatcher{},
+		matcher:          &storerCreateArgumentMatcher{},
 		matcherWants:     make(map[string]any),
 		matcherMethods:   make(map[string]string),
 		matcherHints:     make(map[string]string),
@@ -425,54 +594,254 @@ func (e *storerExpecter) Save(tb testing.TB) *storerSaveExpecter {
 		m.verify(idx)
 	})
 
-	return &storerSaveExpecter{target: m, expect: m.expects[idx]}
+	return &storerCreateExpecter{target: m, expect: m.expects[idx]}
 }
 
-type storerLoad struct {
-	Calls        []storerLoadCall
-	stub         func() ([]Task, error)
+func (e *storerExpecter) Delete(tb testing.TB) *storerDeleteExpecter {
+	if e.target.td == nil {
+		e.target.td = &storerTestDouble{}
+	}
+
+	var m = e.target.td.Delete
+	if m == nil {
+		m = &storerDelete{}
+		e.target.td.Delete = m
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageExpectAfterStub(m, m.stubLocation))
+	}
+
+	if tb == nil {
+		m.panic(mockgenMessageExpectByNil(m))
+	}
+
+	idx := len(m.expects)
+	m.expects = append(m.expects, &storerDeleteExpect{
+		location:         mockgenCallerLocation(2),
+		matcher:          &storerDeleteArgumentMatcher{},
+		matcherWants:     make(map[string]any),
+		matcherMethods:   make(map[string]string),
+		matcherHints:     make(map[string]string),
+		matcherLocations: make(map[string]string),
+		index:            idx,
+		tb:               tb,
+	})
+
+	tb.Helper()
+	tb.Cleanup(func() {
+		tb.Helper()
+		m.verify(idx)
+	})
+
+	return &storerDeleteExpecter{target: m, expect: m.expects[idx]}
+}
+
+func (e *storerExpecter) GetByID(tb testing.TB) *storerGetByIDExpecter {
+	if e.target.td == nil {
+		e.target.td = &storerTestDouble{}
+	}
+
+	var m = e.target.td.GetByID
+	if m == nil {
+		m = &storerGetByID{}
+		e.target.td.GetByID = m
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageExpectAfterStub(m, m.stubLocation))
+	}
+
+	if tb == nil {
+		m.panic(mockgenMessageExpectByNil(m))
+	}
+
+	idx := len(m.expects)
+	m.expects = append(m.expects, &storerGetByIDExpect{
+		location:         mockgenCallerLocation(2),
+		matcher:          &storerGetByIDArgumentMatcher{},
+		matcherWants:     make(map[string]any),
+		matcherMethods:   make(map[string]string),
+		matcherHints:     make(map[string]string),
+		matcherLocations: make(map[string]string),
+		index:            idx,
+		tb:               tb,
+	})
+
+	tb.Helper()
+	tb.Cleanup(func() {
+		tb.Helper()
+		m.verify(idx)
+	})
+
+	return &storerGetByIDExpecter{target: m, expect: m.expects[idx]}
+}
+
+func (e *storerExpecter) List(tb testing.TB) *storerListExpecter {
+	if e.target.td == nil {
+		e.target.td = &storerTestDouble{}
+	}
+
+	var m = e.target.td.List
+	if m == nil {
+		m = &storerList{}
+		e.target.td.List = m
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageExpectAfterStub(m, m.stubLocation))
+	}
+
+	if tb == nil {
+		m.panic(mockgenMessageExpectByNil(m))
+	}
+
+	idx := len(m.expects)
+	m.expects = append(m.expects, &storerListExpect{
+		location:         mockgenCallerLocation(2),
+		matcher:          &storerListArgumentMatcher{},
+		matcherWants:     make(map[string]any),
+		matcherMethods:   make(map[string]string),
+		matcherHints:     make(map[string]string),
+		matcherLocations: make(map[string]string),
+		index:            idx,
+		tb:               tb,
+	})
+
+	tb.Helper()
+	tb.Cleanup(func() {
+		tb.Helper()
+		m.verify(idx)
+	})
+
+	return &storerListExpecter{target: m, expect: m.expects[idx]}
+}
+
+func (e *storerExpecter) ToggleDone(tb testing.TB) *storerToggleDoneExpecter {
+	if e.target.td == nil {
+		e.target.td = &storerTestDouble{}
+	}
+
+	var m = e.target.td.ToggleDone
+	if m == nil {
+		m = &storerToggleDone{}
+		e.target.td.ToggleDone = m
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageExpectAfterStub(m, m.stubLocation))
+	}
+
+	if tb == nil {
+		m.panic(mockgenMessageExpectByNil(m))
+	}
+
+	idx := len(m.expects)
+	m.expects = append(m.expects, &storerToggleDoneExpect{
+		location:         mockgenCallerLocation(2),
+		matcher:          &storerToggleDoneArgumentMatcher{},
+		matcherWants:     make(map[string]any),
+		matcherMethods:   make(map[string]string),
+		matcherHints:     make(map[string]string),
+		matcherLocations: make(map[string]string),
+		index:            idx,
+		tb:               tb,
+	})
+
+	tb.Helper()
+	tb.Cleanup(func() {
+		tb.Helper()
+		m.verify(idx)
+	})
+
+	return &storerToggleDoneExpecter{target: m, expect: m.expects[idx]}
+}
+
+func (e *storerExpecter) Update(tb testing.TB) *storerUpdateExpecter {
+	if e.target.td == nil {
+		e.target.td = &storerTestDouble{}
+	}
+
+	var m = e.target.td.Update
+	if m == nil {
+		m = &storerUpdate{}
+		e.target.td.Update = m
+	}
+
+	if m.stub != nil {
+		m.panic(mockgenMessageExpectAfterStub(m, m.stubLocation))
+	}
+
+	if tb == nil {
+		m.panic(mockgenMessageExpectByNil(m))
+	}
+
+	idx := len(m.expects)
+	m.expects = append(m.expects, &storerUpdateExpect{
+		location:         mockgenCallerLocation(2),
+		matcher:          &storerUpdateArgumentMatcher{},
+		matcherWants:     make(map[string]any),
+		matcherMethods:   make(map[string]string),
+		matcherHints:     make(map[string]string),
+		matcherLocations: make(map[string]string),
+		index:            idx,
+		tb:               tb,
+	})
+
+	tb.Helper()
+	tb.Cleanup(func() {
+		tb.Helper()
+		m.verify(idx)
+	})
+
+	return &storerUpdateExpecter{target: m, expect: m.expects[idx]}
+}
+
+type storerCreate struct {
+	Calls        []storerCreateCall
+	stub         func(task Task) (Task, error)
 	stubLocation string
-	expects      []*storerLoadExpect
+	expects      []*storerCreateExpect
 	verified     bool
 }
 
-func (m *storerLoad) methodName() string {
-	return "Load"
+func (m *storerCreate) methodName() string {
+	return "Create"
 }
 
-func (m *storerLoad) interfaceName() string {
+func (m *storerCreate) interfaceName() string {
 	return "Storer"
 }
 
-func (m *storerLoad) fatal(index int, msg string) {
+func (m *storerCreate) fatal(index int, msg string) {
 	m.verified = true
 	m.expects[index].tb.Helper()
 	m.expects[index].tb.Fatal(msg)
 }
 
-func (m *storerLoad) panic(msg string) {
+func (m *storerCreate) panic(msg string) {
 	m.verified = true
 	panic(msg)
 }
 
-func (m *storerLoad) buildCallHistory(sb *strings.Builder, header string) {
+func (m *storerCreate) buildCallHistory(sb *strings.Builder, header string) {
 	if header != "" && len(m.Calls) != 0 {
 		sb.WriteString(fmt.Sprintf("%s:\n", header))
 	}
 
 	for i, v := range m.Calls {
-		a := []any{}
+		a := []any{"task", v.Argument.task}
 		mockgenMessageCallHistory(sb, i, m.expects[i].location, v.Location, a)
 	}
 }
 
-func (m *storerLoad) invokeStub() ([]Task, error) {
-	v0, v1 := m.stub()
-	return m.capture(storerLoadReturn{first: v0, second: v1})
+func (m *storerCreate) invokeStub(task Task) (Task, error) {
+	v0, v1 := m.stub(task)
+	return m.capture(storerCreateArgument{task: task}, storerCreateReturn{first: v0, second: v1})
 }
 
-func (m *storerLoad) invokeExpect() ([]Task, error) {
-	v0 := []any{}
+func (m *storerCreate) invokeExpect(task Task) (Task, error) {
+	v0 := []any{"task", task}
 
 	v1 := len(m.Calls)
 	if v1 >= len(m.expects) {
@@ -480,163 +849,72 @@ func (m *storerLoad) invokeExpect() ([]Task, error) {
 	}
 
 	v2 := m.expects[v1]
-	return m.capture(v2.returns)
-}
-
-func (m *storerLoad) capture(returns storerLoadReturn) ([]Task, error) {
-	m.Calls = append(m.Calls, storerLoadCall{Location: mockgenCallerLocation(4), Return: returns})
-	return returns.first, returns.second
-}
-
-func (m *storerLoad) verify(index int) {
-	if !m.verified && index >= len(m.Calls) {
-		m.expects[index].tb.Helper()
-		m.expects[index].tb.Fatal(mockgenMessageExpectButNotCalled(m, len(m.expects), len(m.Calls), index))
-	}
-}
-
-type storerLoadCall struct {
-	Location string
-	Return   storerLoadReturn
-}
-
-type storerLoadReturn struct {
-	first  []Task
-	second error
-}
-
-type storerLoadExpect struct {
-	returns  storerLoadReturn
-	location string
-	index    int
-	tb       testing.TB
-}
-
-type storerLoadExpecter struct {
-	expect *storerLoadExpect
-}
-
-func (e *storerLoadExpecter) Return(first []Task, second error) {
-	e.expect.returns = storerLoadReturn{first: first, second: second}
-}
-
-type storerSave struct {
-	Calls        []storerSaveCall
-	stub         func(tasks []Task) error
-	stubLocation string
-	expects      []*storerSaveExpect
-	verified     bool
-}
-
-func (m *storerSave) methodName() string {
-	return "Save"
-}
-
-func (m *storerSave) interfaceName() string {
-	return "Storer"
-}
-
-func (m *storerSave) fatal(index int, msg string) {
-	m.verified = true
-	m.expects[index].tb.Helper()
-	m.expects[index].tb.Fatal(msg)
-}
-
-func (m *storerSave) panic(msg string) {
-	m.verified = true
-	panic(msg)
-}
-
-func (m *storerSave) buildCallHistory(sb *strings.Builder, header string) {
-	if header != "" && len(m.Calls) != 0 {
-		sb.WriteString(fmt.Sprintf("%s:\n", header))
-	}
-
-	for i, v := range m.Calls {
-		a := []any{"tasks", v.Argument.tasks}
-		mockgenMessageCallHistory(sb, i, m.expects[i].location, v.Location, a)
-	}
-}
-
-func (m *storerSave) invokeStub(tasks []Task) error {
-	v0 := m.stub(tasks)
-	return m.capture(storerSaveArgument{tasks: tasks}, storerSaveReturn{first: v0})
-}
-
-func (m *storerSave) invokeExpect(tasks []Task) error {
-	v0 := []any{"tasks", tasks}
-
-	v1 := len(m.Calls)
-	if v1 >= len(m.expects) {
-		m.panic(mockgenMessageTooManyCalls(m, len(m.expects), v1+1, v0))
-	}
-
-	v2 := m.expects[v1]
-	if v2.match != nil && !v2.match(tasks) {
+	if v2.match != nil && !v2.match(task) {
 		v2.tb.Helper()
 		m.fatal(v1, mockgenMessageMatchFail(m, v2.matchLocation, v1, v0))
 	}
 
 	v2.tb.Helper()
-	mockgenMatchArgument(m, v1, "tasks", tasks, v2.matcher.tasks, v2.matcherWants, v2.matcherMethods, v2.matcherHints, v2.tb, v2.matcherLocations["tasks"])
+	mockgenMatchArgument(m, v1, "task", task, v2.matcher.task, v2.matcherWants, v2.matcherMethods, v2.matcherHints, v2.tb, v2.matcherLocations["task"])
 
-	return m.capture(storerSaveArgument{tasks: tasks}, v2.returns)
+	return m.capture(storerCreateArgument{task: task}, v2.returns)
 }
 
-func (m *storerSave) capture(args storerSaveArgument, returns storerSaveReturn) error {
-	m.Calls = append(m.Calls, storerSaveCall{Location: mockgenCallerLocation(4), Argument: args, Return: returns})
-	return returns.first
+func (m *storerCreate) capture(args storerCreateArgument, returns storerCreateReturn) (Task, error) {
+	m.Calls = append(m.Calls, storerCreateCall{Location: mockgenCallerLocation(4), Argument: args, Return: returns})
+	return returns.first, returns.second
 }
 
-func (m *storerSave) verify(index int) {
+func (m *storerCreate) verify(index int) {
 	if !m.verified && index >= len(m.Calls) {
 		m.expects[index].tb.Helper()
 		m.expects[index].tb.Fatal(mockgenMessageExpectButNotCalled(m, len(m.expects), len(m.Calls), index))
 	}
 }
 
-type storerSaveCall struct {
+type storerCreateCall struct {
 	Location string
-	Argument storerSaveArgument
-	Return   storerSaveReturn
+	Argument storerCreateArgument
+	Return   storerCreateReturn
 }
 
-type storerSaveArgument struct {
-	tasks []Task
+type storerCreateArgument struct {
+	task Task
 }
 
-type storerSaveArgumentMatcher struct {
-	tasks func(tasks []Task) bool
+type storerCreateArgumentMatcher struct {
+	task func(task Task) bool
 }
 
-type storerSaveReturn struct {
-	first error
+type storerCreateReturn struct {
+	first  Task
+	second error
 }
 
-type storerSaveExpect struct {
-	match            func(tasks []Task) bool
+type storerCreateExpect struct {
+	match            func(task Task) bool
 	matchLocation    string
-	matcher          *storerSaveArgumentMatcher
+	matcher          *storerCreateArgumentMatcher
 	matcherWants     map[string]any
 	matcherMethods   map[string]string
 	matcherHints     map[string]string
 	matcherLocations map[string]string
-	returns          storerSaveReturn
+	returns          storerCreateReturn
 	location         string
 	index            int
 	tb               testing.TB
 }
 
-type storerSaveExpecter struct {
-	expect *storerSaveExpect
-	target *storerSave
+type storerCreateExpecter struct {
+	expect *storerCreateExpect
+	target *storerCreate
 }
 
-func (e *storerSaveExpecter) Return(first error) {
-	e.expect.returns = storerSaveReturn{first: first}
+func (e *storerCreateExpecter) Return(first Task, second error) {
+	e.expect.returns = storerCreateReturn{first: first, second: second}
 }
 
-func (e *storerSaveExpecter) Match(matcher func(tasks []Task) bool) *storerSaveExpecterWithMatch {
+func (e *storerCreateExpecter) Match(matcher func(task Task) bool) *storerCreateExpecterWithMatch {
 	if matcher == nil {
 		e.expect.tb.Helper()
 		e.target.fatal(e.expect.index, mockgenMessageMatchByNil(e.target))
@@ -644,98 +922,1202 @@ func (e *storerSaveExpecter) Match(matcher func(tasks []Task) bool) *storerSaveE
 
 	e.expect.match = matcher
 	e.expect.matchLocation = mockgenCallerLocation(2)
-	return &storerSaveExpecterWithMatch{expect: e.expect}
+	return &storerCreateExpecterWithMatch{expect: e.expect}
 }
 
-func (e *storerSaveExpecter) MatchTasks(matcher func(tasks []Task) bool) *storerSaveExpecterWithMatchArg {
+func (e *storerCreateExpecter) MatchTask(matcher func(task Task) bool) *storerCreateExpecterWithMatchArg {
 	if matcher == nil {
 		e.expect.tb.Helper()
-		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchTasks"))
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchTask"))
 	}
 
-	e.expect.matcher.tasks = matcher
-	e.expect.matcherLocations["tasks"] = mockgenCallerLocation(2)
-	e.expect.matcherHints["tasks"] = mockgenMessageMatchArgHint()
-	return &storerSaveExpecterWithMatchArg{expect: e.expect, target: e.target}
+	e.expect.matcher.task = matcher
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["task"] = mockgenMessageMatchArgHint()
+	return &storerCreateExpecterWithMatchArg{expect: e.expect, target: e.target}
 }
 
-func (e *storerSaveExpecter) With(tasks []Task) *storerSaveExpecterWithValue {
-	e.WithTasks(tasks)
-	e.expect.matcherLocations["tasks"] = mockgenCallerLocation(2)
+func (e *storerCreateExpecter) With(task Task) *storerCreateExpecterWithValue {
+	e.WithTask(task)
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
 
-	return &storerSaveExpecterWithValue{expect: e.expect}
+	return &storerCreateExpecterWithValue{expect: e.expect}
 }
 
-func (e *storerSaveExpecter) WithTasks(tasks []Task) *storerSaveExpecterWithValueArg {
-	e.expect.matcher.tasks = mockgenReflectEqualMatcher(tasks)
-	e.expect.matcherWants["tasks"] = tasks
-	e.expect.matcherMethods["tasks"] = "reflect.DeepEqual"
-	e.expect.matcherLocations["tasks"] = mockgenCallerLocation(2)
+func (e *storerCreateExpecter) WithTask(task Task) *storerCreateExpecterWithValueArg {
+	e.expect.matcher.task = mockgenBasicComparisonMatcher(task)
+	e.expect.matcherWants["task"] = task
+	e.expect.matcherMethods["task"] = "=="
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
 
-	return &storerSaveExpecterWithValueArg{expect: e.expect, target: e.target}
+	return &storerCreateExpecterWithValueArg{expect: e.expect, target: e.target}
 }
 
-type storerSaveExpecterWithMatch struct {
-	expect *storerSaveExpect
+type storerCreateExpecterWithMatch struct {
+	expect *storerCreateExpect
 }
 
-func (e *storerSaveExpecterWithMatch) Return(first error) {
-	e.expect.returns = storerSaveReturn{first: first}
+func (e *storerCreateExpecterWithMatch) Return(first Task, second error) {
+	e.expect.returns = storerCreateReturn{first: first, second: second}
 }
 
-type storerSaveExpecterWithMatchArg struct {
-	expect *storerSaveExpect
-	target *storerSave
+type storerCreateExpecterWithMatchArg struct {
+	expect *storerCreateExpect
+	target *storerCreate
 }
 
-func (e *storerSaveExpecterWithMatchArg) Return(first error) {
-	e.expect.returns = storerSaveReturn{first: first}
+func (e *storerCreateExpecterWithMatchArg) Return(first Task, second error) {
+	e.expect.returns = storerCreateReturn{first: first, second: second}
 }
 
-func (e *storerSaveExpecterWithMatchArg) MatchTasks(matcher func(tasks []Task) bool) *storerSaveExpecterWithMatchArg {
+func (e *storerCreateExpecterWithMatchArg) MatchTask(matcher func(task Task) bool) *storerCreateExpecterWithMatchArg {
 	if matcher == nil {
 		e.expect.tb.Helper()
-		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchTasks"))
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchTask"))
 	}
 
-	if e.expect.matcher.tasks != nil {
+	if e.expect.matcher.task != nil {
 		e.expect.tb.Helper()
-		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "MatchTasks", e.expect.matcherLocations["tasks"]))
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "MatchTask", e.expect.matcherLocations["task"]))
 	}
 
-	e.expect.matcher.tasks = matcher
-	e.expect.matcherLocations["tasks"] = mockgenCallerLocation(2)
-	e.expect.matcherHints["tasks"] = mockgenMessageMatchArgHint()
+	e.expect.matcher.task = matcher
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["task"] = mockgenMessageMatchArgHint()
 	return e
 }
 
-type storerSaveExpecterWithValue struct {
-	expect *storerSaveExpect
+type storerCreateExpecterWithValue struct {
+	expect *storerCreateExpect
 }
 
-func (e *storerSaveExpecterWithValue) Return(first error) {
-	e.expect.returns = storerSaveReturn{first: first}
+func (e *storerCreateExpecterWithValue) Return(first Task, second error) {
+	e.expect.returns = storerCreateReturn{first: first, second: second}
 }
 
-type storerSaveExpecterWithValueArg struct {
-	expect *storerSaveExpect
-	target *storerSave
+type storerCreateExpecterWithValueArg struct {
+	expect *storerCreateExpect
+	target *storerCreate
 }
 
-func (e *storerSaveExpecterWithValueArg) Return(first error) {
-	e.expect.returns = storerSaveReturn{first: first}
+func (e *storerCreateExpecterWithValueArg) Return(first Task, second error) {
+	e.expect.returns = storerCreateReturn{first: first, second: second}
 }
 
-func (e *storerSaveExpecterWithValueArg) WithTasks(tasks []Task) *storerSaveExpecterWithValueArg {
-	if e.expect.matcher.tasks != nil {
+func (e *storerCreateExpecterWithValueArg) WithTask(task Task) *storerCreateExpecterWithValueArg {
+	if e.expect.matcher.task != nil {
 		e.expect.tb.Helper()
-		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "WithTasks", e.expect.matcherLocations["tasks"]))
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "WithTask", e.expect.matcherLocations["task"]))
 	}
 
-	e.expect.matcher.tasks = mockgenReflectEqualMatcher(tasks)
-	e.expect.matcherWants["tasks"] = tasks
-	e.expect.matcherMethods["tasks"] = "reflect.DeepEqual"
-	e.expect.matcherLocations["tasks"] = mockgenCallerLocation(2)
+	e.expect.matcher.task = mockgenBasicComparisonMatcher(task)
+	e.expect.matcherWants["task"] = task
+	e.expect.matcherMethods["task"] = "=="
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
+
+	return e
+}
+
+type storerDelete struct {
+	Calls        []storerDeleteCall
+	stub         func(id int) error
+	stubLocation string
+	expects      []*storerDeleteExpect
+	verified     bool
+}
+
+func (m *storerDelete) methodName() string {
+	return "Delete"
+}
+
+func (m *storerDelete) interfaceName() string {
+	return "Storer"
+}
+
+func (m *storerDelete) fatal(index int, msg string) {
+	m.verified = true
+	m.expects[index].tb.Helper()
+	m.expects[index].tb.Fatal(msg)
+}
+
+func (m *storerDelete) panic(msg string) {
+	m.verified = true
+	panic(msg)
+}
+
+func (m *storerDelete) buildCallHistory(sb *strings.Builder, header string) {
+	if header != "" && len(m.Calls) != 0 {
+		sb.WriteString(fmt.Sprintf("%s:\n", header))
+	}
+
+	for i, v := range m.Calls {
+		a := []any{"id", v.Argument.id}
+		mockgenMessageCallHistory(sb, i, m.expects[i].location, v.Location, a)
+	}
+}
+
+func (m *storerDelete) invokeStub(id int) error {
+	v0 := m.stub(id)
+	return m.capture(storerDeleteArgument{id: id}, storerDeleteReturn{first: v0})
+}
+
+func (m *storerDelete) invokeExpect(id int) error {
+	v0 := []any{"id", id}
+
+	v1 := len(m.Calls)
+	if v1 >= len(m.expects) {
+		m.panic(mockgenMessageTooManyCalls(m, len(m.expects), v1+1, v0))
+	}
+
+	v2 := m.expects[v1]
+	if v2.match != nil && !v2.match(id) {
+		v2.tb.Helper()
+		m.fatal(v1, mockgenMessageMatchFail(m, v2.matchLocation, v1, v0))
+	}
+
+	v2.tb.Helper()
+	mockgenMatchArgument(m, v1, "id", id, v2.matcher.id, v2.matcherWants, v2.matcherMethods, v2.matcherHints, v2.tb, v2.matcherLocations["id"])
+
+	return m.capture(storerDeleteArgument{id: id}, v2.returns)
+}
+
+func (m *storerDelete) capture(args storerDeleteArgument, returns storerDeleteReturn) error {
+	m.Calls = append(m.Calls, storerDeleteCall{Location: mockgenCallerLocation(4), Argument: args, Return: returns})
+	return returns.first
+}
+
+func (m *storerDelete) verify(index int) {
+	if !m.verified && index >= len(m.Calls) {
+		m.expects[index].tb.Helper()
+		m.expects[index].tb.Fatal(mockgenMessageExpectButNotCalled(m, len(m.expects), len(m.Calls), index))
+	}
+}
+
+type storerDeleteCall struct {
+	Location string
+	Argument storerDeleteArgument
+	Return   storerDeleteReturn
+}
+
+type storerDeleteArgument struct {
+	id int
+}
+
+type storerDeleteArgumentMatcher struct {
+	id func(id int) bool
+}
+
+type storerDeleteReturn struct {
+	first error
+}
+
+type storerDeleteExpect struct {
+	match            func(id int) bool
+	matchLocation    string
+	matcher          *storerDeleteArgumentMatcher
+	matcherWants     map[string]any
+	matcherMethods   map[string]string
+	matcherHints     map[string]string
+	matcherLocations map[string]string
+	returns          storerDeleteReturn
+	location         string
+	index            int
+	tb               testing.TB
+}
+
+type storerDeleteExpecter struct {
+	expect *storerDeleteExpect
+	target *storerDelete
+}
+
+func (e *storerDeleteExpecter) Return(first error) {
+	e.expect.returns = storerDeleteReturn{first: first}
+}
+
+func (e *storerDeleteExpecter) Match(matcher func(id int) bool) *storerDeleteExpecterWithMatch {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchByNil(e.target))
+	}
+
+	e.expect.match = matcher
+	e.expect.matchLocation = mockgenCallerLocation(2)
+	return &storerDeleteExpecterWithMatch{expect: e.expect}
+}
+
+func (e *storerDeleteExpecter) MatchID(matcher func(id int) bool) *storerDeleteExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchID"))
+	}
+
+	e.expect.matcher.id = matcher
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["id"] = mockgenMessageMatchArgHint()
+	return &storerDeleteExpecterWithMatchArg{expect: e.expect, target: e.target}
+}
+
+func (e *storerDeleteExpecter) With(id int) *storerDeleteExpecterWithValue {
+	e.WithID(id)
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return &storerDeleteExpecterWithValue{expect: e.expect}
+}
+
+func (e *storerDeleteExpecter) WithID(id int) *storerDeleteExpecterWithValueArg {
+	e.expect.matcher.id = mockgenBasicComparisonMatcher(id)
+	e.expect.matcherWants["id"] = id
+	e.expect.matcherMethods["id"] = "=="
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return &storerDeleteExpecterWithValueArg{expect: e.expect, target: e.target}
+}
+
+type storerDeleteExpecterWithMatch struct {
+	expect *storerDeleteExpect
+}
+
+func (e *storerDeleteExpecterWithMatch) Return(first error) {
+	e.expect.returns = storerDeleteReturn{first: first}
+}
+
+type storerDeleteExpecterWithMatchArg struct {
+	expect *storerDeleteExpect
+	target *storerDelete
+}
+
+func (e *storerDeleteExpecterWithMatchArg) Return(first error) {
+	e.expect.returns = storerDeleteReturn{first: first}
+}
+
+func (e *storerDeleteExpecterWithMatchArg) MatchID(matcher func(id int) bool) *storerDeleteExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchID"))
+	}
+
+	if e.expect.matcher.id != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "MatchID", e.expect.matcherLocations["id"]))
+	}
+
+	e.expect.matcher.id = matcher
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["id"] = mockgenMessageMatchArgHint()
+	return e
+}
+
+type storerDeleteExpecterWithValue struct {
+	expect *storerDeleteExpect
+}
+
+func (e *storerDeleteExpecterWithValue) Return(first error) {
+	e.expect.returns = storerDeleteReturn{first: first}
+}
+
+type storerDeleteExpecterWithValueArg struct {
+	expect *storerDeleteExpect
+	target *storerDelete
+}
+
+func (e *storerDeleteExpecterWithValueArg) Return(first error) {
+	e.expect.returns = storerDeleteReturn{first: first}
+}
+
+func (e *storerDeleteExpecterWithValueArg) WithID(id int) *storerDeleteExpecterWithValueArg {
+	if e.expect.matcher.id != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "WithID", e.expect.matcherLocations["id"]))
+	}
+
+	e.expect.matcher.id = mockgenBasicComparisonMatcher(id)
+	e.expect.matcherWants["id"] = id
+	e.expect.matcherMethods["id"] = "=="
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return e
+}
+
+type storerGetByID struct {
+	Calls        []storerGetByIDCall
+	stub         func(id int) (Task, error)
+	stubLocation string
+	expects      []*storerGetByIDExpect
+	verified     bool
+}
+
+func (m *storerGetByID) methodName() string {
+	return "GetByID"
+}
+
+func (m *storerGetByID) interfaceName() string {
+	return "Storer"
+}
+
+func (m *storerGetByID) fatal(index int, msg string) {
+	m.verified = true
+	m.expects[index].tb.Helper()
+	m.expects[index].tb.Fatal(msg)
+}
+
+func (m *storerGetByID) panic(msg string) {
+	m.verified = true
+	panic(msg)
+}
+
+func (m *storerGetByID) buildCallHistory(sb *strings.Builder, header string) {
+	if header != "" && len(m.Calls) != 0 {
+		sb.WriteString(fmt.Sprintf("%s:\n", header))
+	}
+
+	for i, v := range m.Calls {
+		a := []any{"id", v.Argument.id}
+		mockgenMessageCallHistory(sb, i, m.expects[i].location, v.Location, a)
+	}
+}
+
+func (m *storerGetByID) invokeStub(id int) (Task, error) {
+	v0, v1 := m.stub(id)
+	return m.capture(storerGetByIDArgument{id: id}, storerGetByIDReturn{first: v0, second: v1})
+}
+
+func (m *storerGetByID) invokeExpect(id int) (Task, error) {
+	v0 := []any{"id", id}
+
+	v1 := len(m.Calls)
+	if v1 >= len(m.expects) {
+		m.panic(mockgenMessageTooManyCalls(m, len(m.expects), v1+1, v0))
+	}
+
+	v2 := m.expects[v1]
+	if v2.match != nil && !v2.match(id) {
+		v2.tb.Helper()
+		m.fatal(v1, mockgenMessageMatchFail(m, v2.matchLocation, v1, v0))
+	}
+
+	v2.tb.Helper()
+	mockgenMatchArgument(m, v1, "id", id, v2.matcher.id, v2.matcherWants, v2.matcherMethods, v2.matcherHints, v2.tb, v2.matcherLocations["id"])
+
+	return m.capture(storerGetByIDArgument{id: id}, v2.returns)
+}
+
+func (m *storerGetByID) capture(args storerGetByIDArgument, returns storerGetByIDReturn) (Task, error) {
+	m.Calls = append(m.Calls, storerGetByIDCall{Location: mockgenCallerLocation(4), Argument: args, Return: returns})
+	return returns.first, returns.second
+}
+
+func (m *storerGetByID) verify(index int) {
+	if !m.verified && index >= len(m.Calls) {
+		m.expects[index].tb.Helper()
+		m.expects[index].tb.Fatal(mockgenMessageExpectButNotCalled(m, len(m.expects), len(m.Calls), index))
+	}
+}
+
+type storerGetByIDCall struct {
+	Location string
+	Argument storerGetByIDArgument
+	Return   storerGetByIDReturn
+}
+
+type storerGetByIDArgument struct {
+	id int
+}
+
+type storerGetByIDArgumentMatcher struct {
+	id func(id int) bool
+}
+
+type storerGetByIDReturn struct {
+	first  Task
+	second error
+}
+
+type storerGetByIDExpect struct {
+	match            func(id int) bool
+	matchLocation    string
+	matcher          *storerGetByIDArgumentMatcher
+	matcherWants     map[string]any
+	matcherMethods   map[string]string
+	matcherHints     map[string]string
+	matcherLocations map[string]string
+	returns          storerGetByIDReturn
+	location         string
+	index            int
+	tb               testing.TB
+}
+
+type storerGetByIDExpecter struct {
+	expect *storerGetByIDExpect
+	target *storerGetByID
+}
+
+func (e *storerGetByIDExpecter) Return(first Task, second error) {
+	e.expect.returns = storerGetByIDReturn{first: first, second: second}
+}
+
+func (e *storerGetByIDExpecter) Match(matcher func(id int) bool) *storerGetByIDExpecterWithMatch {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchByNil(e.target))
+	}
+
+	e.expect.match = matcher
+	e.expect.matchLocation = mockgenCallerLocation(2)
+	return &storerGetByIDExpecterWithMatch{expect: e.expect}
+}
+
+func (e *storerGetByIDExpecter) MatchID(matcher func(id int) bool) *storerGetByIDExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchID"))
+	}
+
+	e.expect.matcher.id = matcher
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["id"] = mockgenMessageMatchArgHint()
+	return &storerGetByIDExpecterWithMatchArg{expect: e.expect, target: e.target}
+}
+
+func (e *storerGetByIDExpecter) With(id int) *storerGetByIDExpecterWithValue {
+	e.WithID(id)
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return &storerGetByIDExpecterWithValue{expect: e.expect}
+}
+
+func (e *storerGetByIDExpecter) WithID(id int) *storerGetByIDExpecterWithValueArg {
+	e.expect.matcher.id = mockgenBasicComparisonMatcher(id)
+	e.expect.matcherWants["id"] = id
+	e.expect.matcherMethods["id"] = "=="
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return &storerGetByIDExpecterWithValueArg{expect: e.expect, target: e.target}
+}
+
+type storerGetByIDExpecterWithMatch struct {
+	expect *storerGetByIDExpect
+}
+
+func (e *storerGetByIDExpecterWithMatch) Return(first Task, second error) {
+	e.expect.returns = storerGetByIDReturn{first: first, second: second}
+}
+
+type storerGetByIDExpecterWithMatchArg struct {
+	expect *storerGetByIDExpect
+	target *storerGetByID
+}
+
+func (e *storerGetByIDExpecterWithMatchArg) Return(first Task, second error) {
+	e.expect.returns = storerGetByIDReturn{first: first, second: second}
+}
+
+func (e *storerGetByIDExpecterWithMatchArg) MatchID(matcher func(id int) bool) *storerGetByIDExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchID"))
+	}
+
+	if e.expect.matcher.id != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "MatchID", e.expect.matcherLocations["id"]))
+	}
+
+	e.expect.matcher.id = matcher
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["id"] = mockgenMessageMatchArgHint()
+	return e
+}
+
+type storerGetByIDExpecterWithValue struct {
+	expect *storerGetByIDExpect
+}
+
+func (e *storerGetByIDExpecterWithValue) Return(first Task, second error) {
+	e.expect.returns = storerGetByIDReturn{first: first, second: second}
+}
+
+type storerGetByIDExpecterWithValueArg struct {
+	expect *storerGetByIDExpect
+	target *storerGetByID
+}
+
+func (e *storerGetByIDExpecterWithValueArg) Return(first Task, second error) {
+	e.expect.returns = storerGetByIDReturn{first: first, second: second}
+}
+
+func (e *storerGetByIDExpecterWithValueArg) WithID(id int) *storerGetByIDExpecterWithValueArg {
+	if e.expect.matcher.id != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "WithID", e.expect.matcherLocations["id"]))
+	}
+
+	e.expect.matcher.id = mockgenBasicComparisonMatcher(id)
+	e.expect.matcherWants["id"] = id
+	e.expect.matcherMethods["id"] = "=="
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return e
+}
+
+type storerList struct {
+	Calls        []storerListCall
+	stub         func(filter string) ([]Task, error)
+	stubLocation string
+	expects      []*storerListExpect
+	verified     bool
+}
+
+func (m *storerList) methodName() string {
+	return "List"
+}
+
+func (m *storerList) interfaceName() string {
+	return "Storer"
+}
+
+func (m *storerList) fatal(index int, msg string) {
+	m.verified = true
+	m.expects[index].tb.Helper()
+	m.expects[index].tb.Fatal(msg)
+}
+
+func (m *storerList) panic(msg string) {
+	m.verified = true
+	panic(msg)
+}
+
+func (m *storerList) buildCallHistory(sb *strings.Builder, header string) {
+	if header != "" && len(m.Calls) != 0 {
+		sb.WriteString(fmt.Sprintf("%s:\n", header))
+	}
+
+	for i, v := range m.Calls {
+		a := []any{"filter", v.Argument.filter}
+		mockgenMessageCallHistory(sb, i, m.expects[i].location, v.Location, a)
+	}
+}
+
+func (m *storerList) invokeStub(filter string) ([]Task, error) {
+	v0, v1 := m.stub(filter)
+	return m.capture(storerListArgument{filter: filter}, storerListReturn{first: v0, second: v1})
+}
+
+func (m *storerList) invokeExpect(filter string) ([]Task, error) {
+	v0 := []any{"filter", filter}
+
+	v1 := len(m.Calls)
+	if v1 >= len(m.expects) {
+		m.panic(mockgenMessageTooManyCalls(m, len(m.expects), v1+1, v0))
+	}
+
+	v2 := m.expects[v1]
+	if v2.match != nil && !v2.match(filter) {
+		v2.tb.Helper()
+		m.fatal(v1, mockgenMessageMatchFail(m, v2.matchLocation, v1, v0))
+	}
+
+	v2.tb.Helper()
+	mockgenMatchArgument(m, v1, "filter", filter, v2.matcher.filter, v2.matcherWants, v2.matcherMethods, v2.matcherHints, v2.tb, v2.matcherLocations["filter"])
+
+	return m.capture(storerListArgument{filter: filter}, v2.returns)
+}
+
+func (m *storerList) capture(args storerListArgument, returns storerListReturn) ([]Task, error) {
+	m.Calls = append(m.Calls, storerListCall{Location: mockgenCallerLocation(4), Argument: args, Return: returns})
+	return returns.first, returns.second
+}
+
+func (m *storerList) verify(index int) {
+	if !m.verified && index >= len(m.Calls) {
+		m.expects[index].tb.Helper()
+		m.expects[index].tb.Fatal(mockgenMessageExpectButNotCalled(m, len(m.expects), len(m.Calls), index))
+	}
+}
+
+type storerListCall struct {
+	Location string
+	Argument storerListArgument
+	Return   storerListReturn
+}
+
+type storerListArgument struct {
+	filter string
+}
+
+type storerListArgumentMatcher struct {
+	filter func(filter string) bool
+}
+
+type storerListReturn struct {
+	first  []Task
+	second error
+}
+
+type storerListExpect struct {
+	match            func(filter string) bool
+	matchLocation    string
+	matcher          *storerListArgumentMatcher
+	matcherWants     map[string]any
+	matcherMethods   map[string]string
+	matcherHints     map[string]string
+	matcherLocations map[string]string
+	returns          storerListReturn
+	location         string
+	index            int
+	tb               testing.TB
+}
+
+type storerListExpecter struct {
+	expect *storerListExpect
+	target *storerList
+}
+
+func (e *storerListExpecter) Return(first []Task, second error) {
+	e.expect.returns = storerListReturn{first: first, second: second}
+}
+
+func (e *storerListExpecter) Match(matcher func(filter string) bool) *storerListExpecterWithMatch {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchByNil(e.target))
+	}
+
+	e.expect.match = matcher
+	e.expect.matchLocation = mockgenCallerLocation(2)
+	return &storerListExpecterWithMatch{expect: e.expect}
+}
+
+func (e *storerListExpecter) MatchFilter(matcher func(filter string) bool) *storerListExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchFilter"))
+	}
+
+	e.expect.matcher.filter = matcher
+	e.expect.matcherLocations["filter"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["filter"] = mockgenMessageMatchArgHint()
+	return &storerListExpecterWithMatchArg{expect: e.expect, target: e.target}
+}
+
+func (e *storerListExpecter) With(filter string) *storerListExpecterWithValue {
+	e.WithFilter(filter)
+	e.expect.matcherLocations["filter"] = mockgenCallerLocation(2)
+
+	return &storerListExpecterWithValue{expect: e.expect}
+}
+
+func (e *storerListExpecter) WithFilter(filter string) *storerListExpecterWithValueArg {
+	e.expect.matcher.filter = mockgenBasicComparisonMatcher(filter)
+	e.expect.matcherWants["filter"] = filter
+	e.expect.matcherMethods["filter"] = "=="
+	e.expect.matcherLocations["filter"] = mockgenCallerLocation(2)
+
+	return &storerListExpecterWithValueArg{expect: e.expect, target: e.target}
+}
+
+type storerListExpecterWithMatch struct {
+	expect *storerListExpect
+}
+
+func (e *storerListExpecterWithMatch) Return(first []Task, second error) {
+	e.expect.returns = storerListReturn{first: first, second: second}
+}
+
+type storerListExpecterWithMatchArg struct {
+	expect *storerListExpect
+	target *storerList
+}
+
+func (e *storerListExpecterWithMatchArg) Return(first []Task, second error) {
+	e.expect.returns = storerListReturn{first: first, second: second}
+}
+
+func (e *storerListExpecterWithMatchArg) MatchFilter(matcher func(filter string) bool) *storerListExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchFilter"))
+	}
+
+	if e.expect.matcher.filter != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "MatchFilter", e.expect.matcherLocations["filter"]))
+	}
+
+	e.expect.matcher.filter = matcher
+	e.expect.matcherLocations["filter"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["filter"] = mockgenMessageMatchArgHint()
+	return e
+}
+
+type storerListExpecterWithValue struct {
+	expect *storerListExpect
+}
+
+func (e *storerListExpecterWithValue) Return(first []Task, second error) {
+	e.expect.returns = storerListReturn{first: first, second: second}
+}
+
+type storerListExpecterWithValueArg struct {
+	expect *storerListExpect
+	target *storerList
+}
+
+func (e *storerListExpecterWithValueArg) Return(first []Task, second error) {
+	e.expect.returns = storerListReturn{first: first, second: second}
+}
+
+func (e *storerListExpecterWithValueArg) WithFilter(filter string) *storerListExpecterWithValueArg {
+	if e.expect.matcher.filter != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "WithFilter", e.expect.matcherLocations["filter"]))
+	}
+
+	e.expect.matcher.filter = mockgenBasicComparisonMatcher(filter)
+	e.expect.matcherWants["filter"] = filter
+	e.expect.matcherMethods["filter"] = "=="
+	e.expect.matcherLocations["filter"] = mockgenCallerLocation(2)
+
+	return e
+}
+
+type storerToggleDone struct {
+	Calls        []storerToggleDoneCall
+	stub         func(id int) (Task, error)
+	stubLocation string
+	expects      []*storerToggleDoneExpect
+	verified     bool
+}
+
+func (m *storerToggleDone) methodName() string {
+	return "ToggleDone"
+}
+
+func (m *storerToggleDone) interfaceName() string {
+	return "Storer"
+}
+
+func (m *storerToggleDone) fatal(index int, msg string) {
+	m.verified = true
+	m.expects[index].tb.Helper()
+	m.expects[index].tb.Fatal(msg)
+}
+
+func (m *storerToggleDone) panic(msg string) {
+	m.verified = true
+	panic(msg)
+}
+
+func (m *storerToggleDone) buildCallHistory(sb *strings.Builder, header string) {
+	if header != "" && len(m.Calls) != 0 {
+		sb.WriteString(fmt.Sprintf("%s:\n", header))
+	}
+
+	for i, v := range m.Calls {
+		a := []any{"id", v.Argument.id}
+		mockgenMessageCallHistory(sb, i, m.expects[i].location, v.Location, a)
+	}
+}
+
+func (m *storerToggleDone) invokeStub(id int) (Task, error) {
+	v0, v1 := m.stub(id)
+	return m.capture(storerToggleDoneArgument{id: id}, storerToggleDoneReturn{first: v0, second: v1})
+}
+
+func (m *storerToggleDone) invokeExpect(id int) (Task, error) {
+	v0 := []any{"id", id}
+
+	v1 := len(m.Calls)
+	if v1 >= len(m.expects) {
+		m.panic(mockgenMessageTooManyCalls(m, len(m.expects), v1+1, v0))
+	}
+
+	v2 := m.expects[v1]
+	if v2.match != nil && !v2.match(id) {
+		v2.tb.Helper()
+		m.fatal(v1, mockgenMessageMatchFail(m, v2.matchLocation, v1, v0))
+	}
+
+	v2.tb.Helper()
+	mockgenMatchArgument(m, v1, "id", id, v2.matcher.id, v2.matcherWants, v2.matcherMethods, v2.matcherHints, v2.tb, v2.matcherLocations["id"])
+
+	return m.capture(storerToggleDoneArgument{id: id}, v2.returns)
+}
+
+func (m *storerToggleDone) capture(args storerToggleDoneArgument, returns storerToggleDoneReturn) (Task, error) {
+	m.Calls = append(m.Calls, storerToggleDoneCall{Location: mockgenCallerLocation(4), Argument: args, Return: returns})
+	return returns.first, returns.second
+}
+
+func (m *storerToggleDone) verify(index int) {
+	if !m.verified && index >= len(m.Calls) {
+		m.expects[index].tb.Helper()
+		m.expects[index].tb.Fatal(mockgenMessageExpectButNotCalled(m, len(m.expects), len(m.Calls), index))
+	}
+}
+
+type storerToggleDoneCall struct {
+	Location string
+	Argument storerToggleDoneArgument
+	Return   storerToggleDoneReturn
+}
+
+type storerToggleDoneArgument struct {
+	id int
+}
+
+type storerToggleDoneArgumentMatcher struct {
+	id func(id int) bool
+}
+
+type storerToggleDoneReturn struct {
+	first  Task
+	second error
+}
+
+type storerToggleDoneExpect struct {
+	match            func(id int) bool
+	matchLocation    string
+	matcher          *storerToggleDoneArgumentMatcher
+	matcherWants     map[string]any
+	matcherMethods   map[string]string
+	matcherHints     map[string]string
+	matcherLocations map[string]string
+	returns          storerToggleDoneReturn
+	location         string
+	index            int
+	tb               testing.TB
+}
+
+type storerToggleDoneExpecter struct {
+	expect *storerToggleDoneExpect
+	target *storerToggleDone
+}
+
+func (e *storerToggleDoneExpecter) Return(first Task, second error) {
+	e.expect.returns = storerToggleDoneReturn{first: first, second: second}
+}
+
+func (e *storerToggleDoneExpecter) Match(matcher func(id int) bool) *storerToggleDoneExpecterWithMatch {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchByNil(e.target))
+	}
+
+	e.expect.match = matcher
+	e.expect.matchLocation = mockgenCallerLocation(2)
+	return &storerToggleDoneExpecterWithMatch{expect: e.expect}
+}
+
+func (e *storerToggleDoneExpecter) MatchID(matcher func(id int) bool) *storerToggleDoneExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchID"))
+	}
+
+	e.expect.matcher.id = matcher
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["id"] = mockgenMessageMatchArgHint()
+	return &storerToggleDoneExpecterWithMatchArg{expect: e.expect, target: e.target}
+}
+
+func (e *storerToggleDoneExpecter) With(id int) *storerToggleDoneExpecterWithValue {
+	e.WithID(id)
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return &storerToggleDoneExpecterWithValue{expect: e.expect}
+}
+
+func (e *storerToggleDoneExpecter) WithID(id int) *storerToggleDoneExpecterWithValueArg {
+	e.expect.matcher.id = mockgenBasicComparisonMatcher(id)
+	e.expect.matcherWants["id"] = id
+	e.expect.matcherMethods["id"] = "=="
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return &storerToggleDoneExpecterWithValueArg{expect: e.expect, target: e.target}
+}
+
+type storerToggleDoneExpecterWithMatch struct {
+	expect *storerToggleDoneExpect
+}
+
+func (e *storerToggleDoneExpecterWithMatch) Return(first Task, second error) {
+	e.expect.returns = storerToggleDoneReturn{first: first, second: second}
+}
+
+type storerToggleDoneExpecterWithMatchArg struct {
+	expect *storerToggleDoneExpect
+	target *storerToggleDone
+}
+
+func (e *storerToggleDoneExpecterWithMatchArg) Return(first Task, second error) {
+	e.expect.returns = storerToggleDoneReturn{first: first, second: second}
+}
+
+func (e *storerToggleDoneExpecterWithMatchArg) MatchID(matcher func(id int) bool) *storerToggleDoneExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchID"))
+	}
+
+	if e.expect.matcher.id != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "MatchID", e.expect.matcherLocations["id"]))
+	}
+
+	e.expect.matcher.id = matcher
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["id"] = mockgenMessageMatchArgHint()
+	return e
+}
+
+type storerToggleDoneExpecterWithValue struct {
+	expect *storerToggleDoneExpect
+}
+
+func (e *storerToggleDoneExpecterWithValue) Return(first Task, second error) {
+	e.expect.returns = storerToggleDoneReturn{first: first, second: second}
+}
+
+type storerToggleDoneExpecterWithValueArg struct {
+	expect *storerToggleDoneExpect
+	target *storerToggleDone
+}
+
+func (e *storerToggleDoneExpecterWithValueArg) Return(first Task, second error) {
+	e.expect.returns = storerToggleDoneReturn{first: first, second: second}
+}
+
+func (e *storerToggleDoneExpecterWithValueArg) WithID(id int) *storerToggleDoneExpecterWithValueArg {
+	if e.expect.matcher.id != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "WithID", e.expect.matcherLocations["id"]))
+	}
+
+	e.expect.matcher.id = mockgenBasicComparisonMatcher(id)
+	e.expect.matcherWants["id"] = id
+	e.expect.matcherMethods["id"] = "=="
+	e.expect.matcherLocations["id"] = mockgenCallerLocation(2)
+
+	return e
+}
+
+type storerUpdate struct {
+	Calls        []storerUpdateCall
+	stub         func(task Task) (Task, error)
+	stubLocation string
+	expects      []*storerUpdateExpect
+	verified     bool
+}
+
+func (m *storerUpdate) methodName() string {
+	return "Update"
+}
+
+func (m *storerUpdate) interfaceName() string {
+	return "Storer"
+}
+
+func (m *storerUpdate) fatal(index int, msg string) {
+	m.verified = true
+	m.expects[index].tb.Helper()
+	m.expects[index].tb.Fatal(msg)
+}
+
+func (m *storerUpdate) panic(msg string) {
+	m.verified = true
+	panic(msg)
+}
+
+func (m *storerUpdate) buildCallHistory(sb *strings.Builder, header string) {
+	if header != "" && len(m.Calls) != 0 {
+		sb.WriteString(fmt.Sprintf("%s:\n", header))
+	}
+
+	for i, v := range m.Calls {
+		a := []any{"task", v.Argument.task}
+		mockgenMessageCallHistory(sb, i, m.expects[i].location, v.Location, a)
+	}
+}
+
+func (m *storerUpdate) invokeStub(task Task) (Task, error) {
+	v0, v1 := m.stub(task)
+	return m.capture(storerUpdateArgument{task: task}, storerUpdateReturn{first: v0, second: v1})
+}
+
+func (m *storerUpdate) invokeExpect(task Task) (Task, error) {
+	v0 := []any{"task", task}
+
+	v1 := len(m.Calls)
+	if v1 >= len(m.expects) {
+		m.panic(mockgenMessageTooManyCalls(m, len(m.expects), v1+1, v0))
+	}
+
+	v2 := m.expects[v1]
+	if v2.match != nil && !v2.match(task) {
+		v2.tb.Helper()
+		m.fatal(v1, mockgenMessageMatchFail(m, v2.matchLocation, v1, v0))
+	}
+
+	v2.tb.Helper()
+	mockgenMatchArgument(m, v1, "task", task, v2.matcher.task, v2.matcherWants, v2.matcherMethods, v2.matcherHints, v2.tb, v2.matcherLocations["task"])
+
+	return m.capture(storerUpdateArgument{task: task}, v2.returns)
+}
+
+func (m *storerUpdate) capture(args storerUpdateArgument, returns storerUpdateReturn) (Task, error) {
+	m.Calls = append(m.Calls, storerUpdateCall{Location: mockgenCallerLocation(4), Argument: args, Return: returns})
+	return returns.first, returns.second
+}
+
+func (m *storerUpdate) verify(index int) {
+	if !m.verified && index >= len(m.Calls) {
+		m.expects[index].tb.Helper()
+		m.expects[index].tb.Fatal(mockgenMessageExpectButNotCalled(m, len(m.expects), len(m.Calls), index))
+	}
+}
+
+type storerUpdateCall struct {
+	Location string
+	Argument storerUpdateArgument
+	Return   storerUpdateReturn
+}
+
+type storerUpdateArgument struct {
+	task Task
+}
+
+type storerUpdateArgumentMatcher struct {
+	task func(task Task) bool
+}
+
+type storerUpdateReturn struct {
+	first  Task
+	second error
+}
+
+type storerUpdateExpect struct {
+	match            func(task Task) bool
+	matchLocation    string
+	matcher          *storerUpdateArgumentMatcher
+	matcherWants     map[string]any
+	matcherMethods   map[string]string
+	matcherHints     map[string]string
+	matcherLocations map[string]string
+	returns          storerUpdateReturn
+	location         string
+	index            int
+	tb               testing.TB
+}
+
+type storerUpdateExpecter struct {
+	expect *storerUpdateExpect
+	target *storerUpdate
+}
+
+func (e *storerUpdateExpecter) Return(first Task, second error) {
+	e.expect.returns = storerUpdateReturn{first: first, second: second}
+}
+
+func (e *storerUpdateExpecter) Match(matcher func(task Task) bool) *storerUpdateExpecterWithMatch {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchByNil(e.target))
+	}
+
+	e.expect.match = matcher
+	e.expect.matchLocation = mockgenCallerLocation(2)
+	return &storerUpdateExpecterWithMatch{expect: e.expect}
+}
+
+func (e *storerUpdateExpecter) MatchTask(matcher func(task Task) bool) *storerUpdateExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchTask"))
+	}
+
+	e.expect.matcher.task = matcher
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["task"] = mockgenMessageMatchArgHint()
+	return &storerUpdateExpecterWithMatchArg{expect: e.expect, target: e.target}
+}
+
+func (e *storerUpdateExpecter) With(task Task) *storerUpdateExpecterWithValue {
+	e.WithTask(task)
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
+
+	return &storerUpdateExpecterWithValue{expect: e.expect}
+}
+
+func (e *storerUpdateExpecter) WithTask(task Task) *storerUpdateExpecterWithValueArg {
+	e.expect.matcher.task = mockgenBasicComparisonMatcher(task)
+	e.expect.matcherWants["task"] = task
+	e.expect.matcherMethods["task"] = "=="
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
+
+	return &storerUpdateExpecterWithValueArg{expect: e.expect, target: e.target}
+}
+
+type storerUpdateExpecterWithMatch struct {
+	expect *storerUpdateExpect
+}
+
+func (e *storerUpdateExpecterWithMatch) Return(first Task, second error) {
+	e.expect.returns = storerUpdateReturn{first: first, second: second}
+}
+
+type storerUpdateExpecterWithMatchArg struct {
+	expect *storerUpdateExpect
+	target *storerUpdate
+}
+
+func (e *storerUpdateExpecterWithMatchArg) Return(first Task, second error) {
+	e.expect.returns = storerUpdateReturn{first: first, second: second}
+}
+
+func (e *storerUpdateExpecterWithMatchArg) MatchTask(matcher func(task Task) bool) *storerUpdateExpecterWithMatchArg {
+	if matcher == nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageMatchArgByNil(e.target, "MatchTask"))
+	}
+
+	if e.expect.matcher.task != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "MatchTask", e.expect.matcherLocations["task"]))
+	}
+
+	e.expect.matcher.task = matcher
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
+	e.expect.matcherHints["task"] = mockgenMessageMatchArgHint()
+	return e
+}
+
+type storerUpdateExpecterWithValue struct {
+	expect *storerUpdateExpect
+}
+
+func (e *storerUpdateExpecterWithValue) Return(first Task, second error) {
+	e.expect.returns = storerUpdateReturn{first: first, second: second}
+}
+
+type storerUpdateExpecterWithValueArg struct {
+	expect *storerUpdateExpect
+	target *storerUpdate
+}
+
+func (e *storerUpdateExpecterWithValueArg) Return(first Task, second error) {
+	e.expect.returns = storerUpdateReturn{first: first, second: second}
+}
+
+func (e *storerUpdateExpecterWithValueArg) WithTask(task Task) *storerUpdateExpecterWithValueArg {
+	if e.expect.matcher.task != nil {
+		e.expect.tb.Helper()
+		e.target.fatal(e.expect.index, mockgenMessageDuplicateMatchArg(e.target, "WithTask", e.expect.matcherLocations["task"]))
+	}
+
+	e.expect.matcher.task = mockgenBasicComparisonMatcher(task)
+	e.expect.matcherWants["task"] = task
+	e.expect.matcherMethods["task"] = "=="
+	e.expect.matcherLocations["task"] = mockgenCallerLocation(2)
 
 	return e
 }
