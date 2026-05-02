@@ -9,7 +9,14 @@ import (
 )
 
 func main() {
-	storer := infra.NewFileStore("tasks.json")
+	// storer := infra.NewFileStore("tasks.json")
+
+	storer, err := infra.NewPostgresStore("postgres://todouser:todopass@localhost:5432/tododb?sslmode=disable")
+	if err != nil {
+		log.Fatalf("connect to database: %v", err)
+	}
+	defer storer.Close()
+
 	manager := todo.NewManager(storer)
 	server := rest.NewServer(manager)
 
